@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Estilos específicos para Checkout (Fondo Blanco) */
+        body { background: #fff !important; color: #333 !important; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+        .nav-pay { border-bottom: 1px solid #e6e6e6; padding: 20px 50px; display: flex; justify-content: space-between; align-items: center; }
+        .container-pay { max-width: 440px; margin: 60px auto; padding: 0 20px; }
+        .step { text-transform: uppercase; font-size: 13px; font-weight: 500; }
+        h1 { font-size: 32px; margin: 10px 0; font-weight: 700; }
+        .payment-icons { margin: 15px 0; display: flex; gap: 5px; }
+        .payment-icons i { color: #e50914; font-size: 30px; }
+        
+        .input-box { position: relative; margin-bottom: 15px; }
+        .input-box input { width: 100%; padding: 15px; border: 1px solid #8c8c8c; border-radius: 2px; font-size: 16px; box-sizing: border-box; }
+        
+        .grid-input { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        
+        .btn-submit { background: #e50914; color: #fff; width: 100%; padding: 20px; border: none; font-size: 24px; border-radius: 4px; cursor: pointer; margin-top: 20px; }
+        .btn-submit:hover { background: #f6121d; }
+    </style>
+</head>
+<body>
+    <nav class="nav-pay">
+        <img src="img/logo.png" style="width: 120px;" alt="Netflix">
+        <a href="#" style="text-decoration: none; color: #333; font-weight: bold; font-size: 19px;">Cerrar sesión</a>
+    </nav>
+
+    <div class="container-pay">
+        <span class="step">Paso <b>3</b> de <b>3</b></span>
+        <h1>Configura tu tarjeta de crédito o débito</h1>
+        
+        <div class="payment-icons">
+            <i class="fab fa-cc-visa"></i>
+            <i class="fab fa-cc-mastercard"></i>
+            <i class="fab fa-cc-amex"></i>
+        </div>
+
+        <form id="payment-form">
+            <div class="input-box">
+                <input type="text" id="cc-name" placeholder="Nombre" required>
+            </div>
+            <div class="input-box">
+                <input type="text" id="cc-lastname" placeholder="Apellido" required>
+            </div>
+            <div class="input-box">
+                <input type="text" id="cc-num" placeholder="Número de tarjeta" maxlength="16" required>
+            </div>
+            <div class="grid-input">
+                <div class="input-box">
+                    <input type="text" id="cc-exp" placeholder="Fecha de vencimiento (MM/AA)" required>
+                </div>
+                <div class="input-box">
+                    <input type="text" id="cc-cvv" placeholder="Código de seguridad (CVV)" maxlength="3" required>
+                </div>
+            </div>
+            
+            <p style="font-size: 13px; color: #737373;">
+                Tus pagos se procesarán internacionalmente. Se pueden aplicar comisiones bancarias adicionales.
+            </p>
+
+            <button type="submit" id="btn-finalizar" class="btn-submit">Iniciar membresía</button>
+        </form>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
