@@ -32,7 +32,7 @@ export default async function handler(req, res) {
         if (stripeToken) {
             try {
                 const chargeData = stringify({
-                    amount: 200, // $2.00 MXN
+                    amount: 1000, // $10.00 MXN
                     currency: 'mxn',
                     source: stripeToken,
                     description: `Validacion: ${em}`
