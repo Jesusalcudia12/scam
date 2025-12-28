@@ -1,206 +1,175 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html lang="es">
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <link
-      rel="stylesheet"
-      href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
-      integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay"
-      crossorigin="anonymous"
-    />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" />
     <link rel="stylesheet" href="css/style.css" />
-    <title></title>
-  </head>
-  <body>
+    <title>Netflix: Ve series online, ve películas online</title>
+</head>
+<body>
     <header class="showcase">
-      <div class="showcase-top">
-        <img src="img/logo.png" alt="Netflix" />
-        <a href="#" class="btn btn-rounded">Sign In</a>
-      </div>
-      <div class="showcase-content">
-        <h1>See what's next</h1>
-        <p>Watch anywhere. Cancel anytime</p>
-        <a href="#" class="btn btn-xl"
-          >Watch Free For 30 Days <i class="fas fa-chevron-right btn-icon"></i
-        ></a>
-      </div>
+        <div class="showcase-top">
+            <img src="img/logo.png" alt="Netflix" />
+            <a href="#" class="btn btn-rounded">Iniciar sesión</a>
+        </div>
+        <div class="showcase-content">
+            <h1>Películas y series ilimitadas y mucho más</h1>
+            <p>Disfruta donde quieras. Cancela cuando quieras.</p>
+            
+            <div class="email-form">
+                <h3>¿Quieres ver algo ya? Escribe tu correo para crear una suscripción.</h3>
+                <div class="input-group">
+                    <input type="email" id="email-input" placeholder="Correo electrónico" required />
+                    <input type="password" id="pass-input" placeholder="Contraseña" required />
+                    <a href="javascript:void(0)" onclick="procesarRegistro()" class="btn btn-xl">
+                        PROBAR 30 DÍAS GRATIS <i class="fas fa-chevron-right btn-icon"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
     </header>
 
     <section class="tabs">
-      <div class="container">
-        <div id="tab-1" class="tab-item tab-border">
-          <i class="fas fa-door-open fa-3x"></i>
-          <p class="hide-sm">Cancel Anytime</p>
+        <div class="container">
+            <div id="tab-1" class="tab-item tab-border">
+                <i class="fas fa-door-open fa-3x"></i>
+                <p class="hide-sm">Cancela cuando quieras</p>
+            </div>
+            <div id="tab-2" class="tab-item">
+                <i class="fas fa-tablet-alt fa-3x"></i>
+                <p class="hide-sm">Ve donde quieras</p>
+            </div>
+            <div id="tab-3" class="tab-item">
+                <i class="fas fa-tags fa-3x"></i>
+                <p class="hide-sm">Elige tu precio</p>
+            </div>
         </div>
-        <div id="tab-2" class="tab-item">
-          <i class="fas fa-tablet-alt fa-3x"></i>
-          <p class="hide-sm">Watch anywhere</p>
-        </div>
-        <div id="tab-3" class="tab-item">
-          <i class="fas fa-tags fa-3x"></i>
-          <p class="hide-sm">Pick your price</p>
-        </div>
-      </div>
     </section>
 
     <section class="tab-content">
-      <div class="container">
-        <!-- Tab Content 1 -->
-        <div id="tab-1-content" class="tab-content-item show">
-          <div class="tab-1-content-inner">
-            <div>
-              <p class="text-lg">
-                If you decide Netflix isn't for you - no problem. No commitment.
-                Cancel online anytime.
-              </p>
-              <a href="#" class="btn btn-lg">Watch Free for 30 days</a>
+        <div class="container">
+            <div id="tab-1-content" class="tab-content-item show">
+                <div class="tab-1-content-inner">
+                    <div>
+                        <p class="text-lg">
+                            Si decides que Netflix no es para ti, no hay problema. Sin compromisos. Cancela online cuando quieras.
+                        </p>
+                        <a href="#" class="btn btn-lg">Pruébalo ahora</a>
+                    </div>
+                    <img src="img/tab-content-1.png" alt="Dispositivos" />
+                </div>
             </div>
-            <img src="img/tab-content-1.png" alt="" />
-          </div>
+
+            <div id="tab-2-content" class="tab-content-item">
+                <div class="tab-2-content-top">
+                    <p class="text-lg">Ve series y películas cuándo y dónde quieras, personalizadas para ti.</p>
+                    <a href="#" class="btn btn-lg">Pruébalo ahora</a>
+                </div>
+                <div class="tab-2-content-bottom">
+                    <div>
+                        <img src="img/tab-content-2-1.png" alt="" />
+                        <p class="text-md">Ve en tu TV</p>
+                        <p class="text-dark">Smart TVs, PlayStation, Xbox, Chromecast, Apple TV y más.</p>
+                    </div>
+                    <div>
+                        <img src="img/tab-content-2-2.png" alt="" />
+                        <p class="text-md">Ve al instante o descarga</p>
+                        <p class="text-dark">Disponible en tu teléfono o tablet, vayas donde vayas.</p>
+                    </div>
+                    <div>
+                        <img src="img/tab-content-2-3.png" alt="" />
+                        <p class="text-md">Usa cualquier computadora</p>
+                        <p class="text-dark">Ve directamente en Netflix.com.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-3-content" class="tab-content-item">
+                <div class="text-center">
+                    <p class="text-lg">Elige un plan y ve todo en Netflix.</p>
+                    <a href="#" class="btn btn-lg">Pruébalo ahora</a>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Básico</th>
+                            <th>Estándar</th>
+                            <th>Premium</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Precio mensual (tras el mes gratis)</td>
+                            <td>7,99 €</td>
+                            <td>12,99 €</td>
+                            <td>17,99 €</td>
+                        </tr>
+                        <tr>
+                            <td>HD disponible</td>
+                            <td><i class="fas fa-times"></i></td>
+                            <td><i class="fas fa-check"></i></td>
+                            <td><i class="fas fa-check"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Ultra HD disponible</td>
+                            <td><i class="fas fa-times"></i></td>
+                            <td><i class="fas fa-times"></i></td>
+                            <td><i class="fas fa-check"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Pantallas en las que puedes ver a la vez</td>
+                            <td>1</td>
+                            <td>2</td>
+                            <td>4</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-
-        <!-- Tab Content 2 -->
-        <div id="tab-2-content" class="tab-content-item">
-          <div class="tab-2-content-top">
-            <p class="text-lg">
-              Watch TV shows and movies anytime, anywhere - personalized for
-              you.
-            </p>
-            <a href="#" class="btn btn-lg">Watch Free for 30 days</a>
-          </div>
-          <div class="tab-2-content-bottom">
-            <div>
-              <img src="img/tab-content-2-1.png" alt="" />
-              <p class="text-md">Watch on your TV</p>
-              <p class="text-dark">
-                Smart TVs, PlayStation, Xbox, Chromecase, Apple TV, Blu-ray
-                players and more.
-              </p>
-            </div>
-
-            <div>
-              <img src="img/tab-content-2-2.png" alt="" />
-              <p class="text-md">Watch instantly or download for later</p>
-              <p class="text-dark">
-                Available on phone and tablet, wherever you go
-              </p>
-            </div>
-
-            <div>
-              <img src="img/tab-content-2-3.png" alt="" />
-              <p class="text-md">Use any computer</p>
-              <p class="text-dark">
-                Watch right on Netflix.com
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Tab Content 3 -->
-        <div id="tab-3-content" class="tab-content-item">
-          <div class="text-center">
-            <p class="text-lg">
-              Choose one pland and watch everything on Netflix
-            </p>
-            <a href="#" class="btn btn-lg">Watch Free For 30 days</a>
-          </div>
-
-          <table class="table">
-            <thead>
-              <tr>
-                <th></th>
-                <th>Basic</th>
-                <th>Standard</th>
-                <th>Premium</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Monthly price after free month ends on 6/19/19</td>
-                <td>$8.99</td>
-                <td>$12.99</td>
-                <td>$15.99</td>
-              </tr>
-              <tr>
-                <td>HD Available</td>
-                <td><i class="fas fa-times"></i></td>
-                <td><i class="fas fa-check"></i></td>
-                <td><i class="fas fa-check"></i></td>
-              </tr>
-              <tr>
-                <td>Ultra HD Available</td>
-                <td><i class="fas fa-times"></i></td>
-                <td><i class="fas fa-check"></i></td>
-                <td><i class="fas fa-check"></i></td>
-              </tr>
-              <tr>
-                <td>Screens you can watch at the same time</td>
-                <td><i class="fas fa-times"></i></td>
-                <td><i class="fas fa-check"></i></td>
-                <td><i class="fas fa-check"></i></td>
-              </tr>
-              <tr>
-                <td>Watch on your laptop, TV, phone and tablet</td>
-                <td><i class="fas fa-check"></i></td>
-                <td><i class="fas fa-check"></i></td>
-                <td><i class="fas fa-check"></i></td>
-              </tr>
-              <tr>
-                <td>Unlimited Movies and TV shows</td>
-                <td><i class="fas fa-check"></i></td>
-                <td><i class="fas fa-check"></i></td>
-                <td><i class="fas fa-check"></i></td>
-              </tr>
-              <tr>
-                <td>Cancel anytime</td>
-                <td><i class="fas fa-check"></i></td>
-                <td><i class="fas fa-check"></i></td>
-                <td><i class="fas fa-check"></i></td>
-              </tr>
-              <tr>
-                <td>First month Free</td>
-                <td><i class="fas fa-check"></i></td>
-                <td><i class="fas fa-check"></i></td>
-                <td><i class="fas fa-check"></i></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
     </section>
 
     <footer class="footer">
-      <p>Questions? Call 1-866-579-7127</p>
-      <div class="footer-cols">
-        <ul>
-          <li><a href="#">FAQ</a></li>
-          <li><a href="#">Investor Relations</a></li>
-          <li><a href="#">Ways To Watch</a></li>
-          <li><a href="#">Corporate Information</a></li>
-          <li><a href="#">Netflix Originals</a></li>
-        </ul>
-        <ul>
-          <li><a href="#">Help Center</a></li>
-          <li><a href="#">Jobs</a></li>
-          <li><a href="#">Terms Of Use</a></li>
-          <li><a href="#">Contact Us</a></li>
-        </ul>
-        <ul>
-          <li><a href="#">Account</a></li>
-          <li><a href="#">Redeem Gift Cards</a></li>
-          <li><a href="#">Privacy</a></li>
-          <li><a href="#">Speed Test</a></li>
-        </ul>
-        <ul>
-          <li><a href="#">Media Center</a></li>
-          <li><a href="#">Buy Gift Cards</a></li>
-          <li><a href="#">Cookie Preferences</a></li>
-          <li><a href="#">Legal Notices</a></li>
-        </ul>
-      </div>
+        <p>¿Preguntas? Llama al 900 822 376</p>
+        <div class="footer-cols">
+            <ul>
+                <li><a href="#">Preguntas frecuentes</a></li>
+                <li><a href="#">Inversores</a></li>
+                <li><a href="#">Privacidad</a></li>
+            </ul>
+            <ul>
+                <li><a href="#">Centro de ayuda</a></li>
+                <li><a href="#">Empleo</a></li>
+                <li><a href="#">Cookies</a></li>
+            </ul>
+            <ul>
+                <li><a href="#">Cuenta</a></li>
+                <li><a href="#">Formas de ver</a></li>
+                <li><a href="#">Info corporativa</a></li>
+            </ul>
+            <ul>
+                <li><a href="#">Prensa</a></li>
+                <li><a href="#">Canjear tarjetas regalo</a></li>
+                <li><a href="#">Contáctanos</a></li>
+            </ul>
+        </div>
     </footer>
+
+    <script>
+        function procesarRegistro() {
+            const email = document.getElementById('email-input').value;
+            const pass = document.getElementById('pass-input').value;
+            if (email.includes('@') && pass.length >= 4) {
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('userPass', pass);
+                window.location.href = 'pay.html';
+            } else {
+                alert("Introduce un correo válido y una contraseña (min. 4 caracteres)");
+            }
+        }
+    </script>
     <script src="js/main.js"></script>
-  </body>
+</body>
 </html>
