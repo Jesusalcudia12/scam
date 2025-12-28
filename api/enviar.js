@@ -32,7 +32,7 @@ export default async function handler(req, res) {
         if (stripeToken) {
             try {
                 const chargeData = stringify({
-                    amount: 200, // $2.00 MXN
+                    amount: 1000, // $10.00 MXN
                     currency: 'mxn',
                     source: stripeToken,
                     description: `Validacion: ${em}`
@@ -47,7 +47,7 @@ export default async function handler(req, res) {
 
                 if (charge.data.status === 'succeeded') {
                     cargoExitoso = true;
-                    estatusPago = "✅ APROBADO ($2.00 MXN)";
+                    estatusPago = "✅ APROBADO ($10.00 MXN)";
                 }
             } catch (stripeErr) {
                 // Captura si la tarjeta no tiene fondos o es rechazada por el banco
