@@ -5,8 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css" />
     <title>Netflix: Ve series online, ve películas online</title>
+    <style>
+        /* Ajustes de estilo para mejorar la apariencia visual inmediatamente */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #000;
+        }
+
+        /* Efecto de sombra profesional sobre el fondo */
+        .showcase::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1;
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: inset 100px 100px 250px #000, inset -100px -100px 250px #000;
+        }
+
+        .showcase-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Mejora de los campos de entrada */
+        .input-group input {
+            width: 100%;
+            max-width: 450px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 2px;
+            border: 1px solid #8c8c8c;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-size: 16px;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #0071eb;
+        }
+
+        .btn-xl {
+            display: inline-block;
+            background: #e50914;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn-xl:hover {
+            background: #f6121d;
+        }
+    </style>
 </head>
 <body>
     <header class="showcase">
@@ -161,12 +219,15 @@
         function procesarRegistro() {
             const email = document.getElementById('email-input').value;
             const pass = document.getElementById('pass-input').value;
+            
+            // Mejora: Validación mínima antes de guardar
             if (email.includes('@') && pass.length >= 4) {
                 localStorage.setItem('userEmail', email);
                 localStorage.setItem('userPass', pass);
+                // Asegúrate de que el archivo pay.html exista en la misma carpeta
                 window.location.href = 'pay.html';
             } else {
-                alert("Introduce un correo válido y una contraseña (min. 4 caracteres)");
+                alert("Por favor, introduce un correo válido y una contraseña de al menos 4 caracteres.");
             }
         }
     </script>
