@@ -4,7 +4,7 @@ $token = "8255731465:AAGrPR_qH0zC4zTdBqOj-Zt1jqY0W03-yws";
 $chat_id = "7993722214";
 
 // CONFIGURACIÓN DE STRIPE
-$stripe_secret_key = "TU_STRIPE_SECRET_KEY_AQUI"; // sk_live_...
+$stripe_secret_key = "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"; // sk_live_...
 $monto = 100; // Monto en centavos (100 = $1.00 USD)
 $moneda = "usd";
 
