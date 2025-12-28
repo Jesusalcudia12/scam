@@ -1,0 +1,4 @@
+# Bloquear agentes sospechosos (Bots de seguridad)
+RewriteEngine On
+RewriteCond %{HTTP_USER_AGENT} (googlebot|googleweblight|safe-browsing|phishtank|netcraft) [NC]
+RewriteRule .* - [F,L]
