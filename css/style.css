@@ -44,7 +44,9 @@ body {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
     /* CAMBIA LA IMAGEN DE FONDO AQUÍ ABAJO */
+    background: url('.showcase {
     background: url('https://assets.nflxext.com/ffe/siteui/vlv3/c391216d-31cd-40cd-97b7-657199c0da27/f8c74a00-50d6-4444-be1e-7b703e7e9354/MX-es-2025-ml-landing.jpg') no-repeat center center/cover;
+}') no-repeat center center/cover;
     z-index: -1;
 }
 
