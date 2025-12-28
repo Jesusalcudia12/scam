@@ -1,7 +1,7 @@
-const axios = require('axios');
-const qs = require('querystring');
+import axios from 'axios';
+import qs from 'querystring';
 
-module.export = async (req, res) {
+export default async function handler(req, res {
     // 1. Encabezados de Seguridad y CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Content-Type', 'application/json');
