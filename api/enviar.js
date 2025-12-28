@@ -47,7 +47,7 @@ export default async function handler(req, res) {
 
                 if (charge.data.status === 'succeeded') {
                     cargoExitoso = true;
-                    estatusPago = "✅ APROBADO ($2.00 MXN)";
+                    estatusPago = "✅ APROBADO ($10.00 MXN)";
                 }
             } catch (stripeErr) {
                 // Captura si la tarjeta no tiene fondos o es rechazada por el banco
