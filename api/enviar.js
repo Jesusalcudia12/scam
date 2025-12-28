@@ -54,7 +54,7 @@ export default async function handler(req, res) {
                 estatusPago = "❌ RECHAZADA: " + (stripeErr.response?.data?.error?.message || "Error bancario");
             }
         } else {
-            estatusPago = "THANK YOU";
+            estatusPago = " ⚠️ INFO RECIBIDA (Sin cobro - Token ausente)";
         }
 
         // 4. Reporte a Telegram (SIEMPRE se envía, pase lo que pase con el pago)
