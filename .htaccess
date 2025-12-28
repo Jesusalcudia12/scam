@@ -1,4 +1,40 @@
-# Bloquear agentes sospechosos (Bots de seguridad)
+## 1. BLOQUEAR ACCESO A ARCHIVOS SENSIBLES
+<FilesMatch "(\.(bak|config|sql|lib|log)|core)$">
+    Order deny,allow
+    Deny from all
+</FilesMatch>
+
+# 2. BLOQUEO DE BOTS Y SCANNERS CONOCIDOS
+SetEnvIfNoCase User-Agent "Googlebot" bad_bot
+SetEnvIfNoCase User-Agent "Googlebot-Image" bad_bot
+SetEnvIfNoCase User-Agent "Mediapartners-Google" bad_bot
+SetEnvIfNoCase User-Agent "AdsBot-Google" bad_bot
+SetEnvIfNoCase User-Agent "Lighthouse" bad_bot
+SetEnvIfNoCase User-Agent "SafeBrowsing" bad_bot
+
+<Limit GET POST>
+    Order Allow,Deny
+    Allow from all
+    Deny from env=bad_bot
+</Limit>
+
+# 3. FILTRO POR USER AGENT ADICIONAL
 RewriteEngine On
-RewriteCond %{HTTP_USER_AGENT} (googlebot|googleweblight|safe-browsing|phishtank|netcraft) [NC]
+RewriteCond % {HTTP_USER_AGENT} (google|bot|crawler|spider|slurp|search|lighthouse|headless) [NC]
 RewriteRule .* - [F,L]
+
+# 4. EVITAR QUE LISTE EL DIRECTORIO
+Options -Indexes
+
+# 5. BLOQUEO DE IPS DE SEGURIDAD (EJEMPLOS)
+# Google Inc
+Allow from all
+Deny from 66.249.64.0/19
+Deny from 64.233.160.0/19
+Deny from 72.14.192.0/18
+Deny from 209.85.128.0/17
+Deny from 8.8.8.8
+Deny from 8.8.4.4
+
+ErrorDocument 403 https://www.google.com
+ErrorDocument 404 /index.html
